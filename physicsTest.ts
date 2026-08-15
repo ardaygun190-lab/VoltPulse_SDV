@@ -1,54 +1,45 @@
-// physicsTest.ts - VoltPulse Fizik & Telemetri Çekirdeği Simülasyon Testi
+// physicsTest.ts - VoltPulse Fizik ve Termal Simülasyon Testi
 import { vehicles } from './vehicles';
 import { calculateRequiredPower, TelemetryConditions } from './physicsCore';
+import { calculateThermalImpact, ThermalConditions } from './thermalModel';
 
-// Test edilecek araçları seçelim
 const togg = vehicles.find(v => v.id === 'togg-t10x-long')!;
-const tesla = vehicles.find(v => v.id === 'tesla-model-y-lr')!;
-const lucid = vehicles.find(v => v.id === 'lucid-air-dream-r')!;
-const cybertruck = vehicles.find(v => v.id === 'tesla-cybertruck-awd')!;
+const teslaLFP = vehicles.find(v => v.id === 'tesla-model3-rwd')!;
+const teslaLR = vehicles.find(v => v.id === 'tesla-model-y-lr')!;
 
 console.log('======================================================================');
-console.log('            VOLTPULSE SDV - TELEMETRİ FİZİK ÇEKİRDEĞİ TESTİ           ');
+console.log('         VOLTPULSE SDV - FİZİK & TERMAL MOTOR ENTEGRASYON TESTİ        ');
 console.log('======================================================================\n');
 
-// SENARYO 1: 120 km/h Otoban Sürüşü (Düz Yol, Rüzgarsız)
-console.log('--- SENARYO 1: 120 km/h Otoban Sürüşü (Düz Yol) ---');
-const highwayCond: TelemetryConditions = { speed_kmh: 120, grade_percent: 0, headwind_kmh: 0 };
+// SENARYO 1: Yaz (22°C) vs Kış (-10°C) Togg T10X Karşılaştırması (110 km/h)
+console.log('--- SENARYO 1: Togg T10X Yaz vs Ekstrem Kış (-10°C, 110 km/h) ---');
 
-const toggHw = calculateRequiredPower(togg, highwayCond);
-const teslaHw = calculateRequiredPower(tesla, highwayCond);
+const summerThermal: ThermalConditions = { ambient_temp_c: 22 };
+const winterThermal: ThermalConditions = { ambient_temp_c: -10, cabin_target_temp_c: 22 };
 
-console.log(`[Togg T10X]   Cd: ${togg.cd}  | Faero: ${toggHw.f_aero_n.toFixed(1)} N | Batarya Gücü: ${toggHw.p_battery_kw.toFixed(2)} kW`);
-console.log(`[Tesla Mod Y] Cd: ${tesla.cd}  | Faero: ${teslaHw.f_aero_n.toFixed(1)} N | Batarya Gücü: ${teslaHw.p_battery_kw.toFixed(2)} kW`);
-const diffPercent = (((toggHw.p_battery_kw - teslaHw.p_battery_kw) / teslaHw.p_battery_kw) * 100).toFixed(1);
-console.log(`-> Sonuç: Aerodinamik fark nedeniyle Togg otobanda Tesla'dan %${diffPercent} daha fazla güç çekiyor.\n`);
+const summerImpact = calculateThermalImpact(togg, summerThermal);
+const winterImpact = calculateThermalImpact(togg, winterThermal);
 
-// SENARYO 2: %4 Eğimli Yokuş Tırmanışı (100 km/h)
-console.log('--- SENARYO 2: %4 Eğimli Yokuş Tırmanışı (100 km/h) ---');
-const hillCond: TelemetryConditions = { speed_kmh: 100, grade_percent: 4, headwind_kmh: 0 };
-const toggHill = calculateRequiredPower(togg, hillCond);
+const summerDrive = calculateRequiredPower(togg, { speed_kmh: 110, grade_percent: 0, hvac_power_kw: summerImpact.hvac_power_kw });
+const winterDrive = calculateRequiredPower(togg, { speed_kmh: 110, grade_percent: 0, hvac_power_kw: winterImpact.hvac_power_kw });
 
-console.log(`[Togg T10X] Toplam Direnç Kuvveti: ${toggHill.f_total_n.toFixed(1)} N`);
-console.log(`  - Hava Sürtünmesi : ${toggHill.f_aero_n.toFixed(1)} N`);
-console.log(`  - Yuvarlanma      : ${toggHill.f_roll_n.toFixed(1)} N`);
-console.log(`  - Eğim (Yerçekimi): ${toggHill.f_gravity_n.toFixed(1)} N`);
-console.log(`  => Bataryadan Çekilen Güç: ${toggHill.p_battery_kw.toFixed(2)} kW\n`);
+console.log(`[YAZ  22°C]  Klima Yükü: ${summerImpact.hvac_power_kw.toFixed(2)} kW | Batarya Gücü: ${summerDrive.p_battery_kw.toFixed(2)} kW | Efektif Pil: ${summerImpact.effective_usable_kwh.toFixed(1)} kWh`);
+console.log(`[KIŞ -10°C]  Klima Yükü: ${winterImpact.hvac_power_kw.toFixed(2)} kW | Batarya Gücü: ${winterDrive.p_battery_kw.toFixed(2)} kW | Efektif Pil: ${winterImpact.effective_usable_kwh.toFixed(1)} kWh`);
 
-// SENARYO 3: Ekstrem Aerodinamik Kıyaslama (130 km/h) - Lucid Air vs Cybertruck
-console.log('--- SENARYO 3: Ekstrem Kıyaslama (130 km/h) [Lucid Air vs Cybertruck] ---');
-const speedCond: TelemetryConditions = { speed_kmh: 130, grade_percent: 0, headwind_kmh: 0 };
-const lucidRes = calculateRequiredPower(lucid, speedCond);
-const cyberRes = calculateRequiredPower(cybertruck, speedCond);
+const summerRangeKm = (summerImpact.effective_usable_kwh / summerDrive.p_battery_kw) * 110;
+const winterRangeKm = (winterImpact.effective_usable_kwh / winterDrive.p_battery_kw) * 110;
+const rangeDropPercent = (((summerRangeKm - winterRangeKm) / summerRangeKm) * 100).toFixed(1);
 
-console.log(`[Lucid Air]   Cd: ${lucid.cd}  | Faero: ${lucidRes.f_aero_n.toFixed(1)} N | Batarya: ${lucidRes.p_battery_kw.toFixed(2)} kW`);
-console.log(`[Cybertruck]  Cd: ${cybertruck.cd}  | Faero: ${cyberRes.f_aero_n.toFixed(1)} N | Batarya: ${cyberRes.p_battery_kw.toFixed(2)} kW\n`);
+console.log(`-> Yaz Tahmini Menzil : ${summerRangeKm.toFixed(0)} km`);
+console.log(`-> Kış Tahmini Menzil : ${winterRangeKm.toFixed(0)} km`);
+console.log(`=> Soğuk hava kaynaklı menzil kaybı: %${rangeDropPercent}\n`);
 
-// SENARYO 4: Yokuş Aşağı Rejeneratif Frenleme (-%5 Eğim, 80 km/h)
-console.log('--- SENARYO 4: Rejeneratif Frenleme (-%5 Eğim, 80 km/h) ---');
-const downhillCond: TelemetryConditions = { speed_kmh: 80, grade_percent: -5, headwind_kmh: 0 };
-const toggDownhill = calculateRequiredPower(togg, downhillCond);
+// SENARYO 2: Kimya Karşılaştırması (-10°C Kış Şartında NMC vs LFP)
+console.log('--- SENARYO 2: -10°C Soğukta NMC vs LFP Batarya Kimyası Direnci ---');
+const nmcImpact = calculateThermalImpact(teslaLR, winterThermal);
+const lfpImpact = calculateThermalImpact(teslaLFP, winterThermal);
 
-console.log(`[Togg T10X] Tekerlek Gücü: ${toggDownhill.p_wheel_kw.toFixed(2)} kW`);
-console.log(`[Togg T10X] Bataryaya Geri Kazanılan Net Güç: ${toggDownhill.p_battery_kw.toFixed(2)} kW`);
+console.log(`[Tesla Model Y (NMC)] Kapasite Çarpanı: %${(nmcImpact.usable_capacity_factor * 100).toFixed(1)} (Kayıp: %${((1 - nmcImpact.usable_capacity_factor) * 100).toFixed(1)})`);
+console.log(`[Tesla Model 3 (LFP)] Kapasite Çarpanı: %${(lfpImpact.usable_capacity_factor * 100).toFixed(1)} (Kayıp: %${((1 - lfpImpact.usable_capacity_factor) * 100).toFixed(1)})`);
+console.log('-> Sonuç: LFP kimyası dondurucu soğukta NMC kimyasına göre elektrolit direnci nedeniyle belirgin şekilde daha fazla kimyasal kapasite kaybeder.');
 console.log('======================================================================');
