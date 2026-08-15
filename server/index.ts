@@ -5,6 +5,7 @@ import { vehicles } from '../vehicles';
 import { calculateRequiredPower, TelemetryConditions } from '../physicsCore';
 import { calculateThermalImpact, ThermalConditions } from '../thermalModel';
 import { runChargingDiagnostics, ChargerStation, ChargingPointTelemetry } from './chargingDiagnostics';
+import { calculateBatteryHealth, BatteryUsageHistory } from './batteryPassport';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -123,6 +124,33 @@ app.post('/api/charging/diagnose', (req: Request<{}, {}, ChargeDiagnosticRequest
       max_power_kw: charger.max_power_kw
     },
     diagnostic: result
+  });
+});
+
+// 5. Uç Nokta: Dijital Batarya Pasaportu & SOH Analizi (EU 2023/1542)
+interface PassportRequest {
+  vehicleId: string;
+  history: BatteryUsageHistory;
+}
+
+app.post('/api/battery/passport', (req: Request<{}, {}, PassportRequest>, res: Response) => {
+  const { vehicleId, history } = req.body;
+
+  const vehicle = vehicles.find(v => v.id === vehicleId);
+  if (!vehicle) {
+    return res.status(404).json({ success: false, error: 'Geçersiz vehicleId.' });
+  }
+
+  const passport = calculateBatteryHealth(vehicle, history);
+
+  return res.json({
+    success: true,
+    vehicle: {
+      id: vehicle.id,
+      make: vehicle.make,
+      model: vehicle.model
+    },
+    passport
   });
 });
 
