@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Activity, 
   Zap, 
   BatteryCharging, 
   ShieldCheck, 
   AlertTriangle, 
-  Thermometer, 
-  Wind, 
   Gauge, 
   Leaf, 
   CheckCircle2, 
@@ -18,152 +16,220 @@ interface Vehicle {
   make: string;
   model: string;
   cell_type: 'NMC' | 'LFP';
+  mass_kg: number;
+  drag_coefficient: number;
+  frontal_area_m2: number;
+  rolling_resistance_coeff: number;
+  drivetrain_efficiency: number;
   battery: {
+    total_capacity_kwh: number;
     usable_capacity_kwh: number;
     voltage_v: number;
     max_dc_charge_kw: number;
   };
 }
 
+const VEHICLES: Vehicle[] = [
+  {
+    id: 'togg-t10x-long',
+    make: 'Togg',
+    model: 'T10X V2 Uzun Menzil',
+    cell_type: 'NMC',
+    mass_kg: 2165,
+    drag_coefficient: 0.28,
+    frontal_area_m2: 2.55,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.92,
+    battery: {
+      total_capacity_kwh: 88.5,
+      usable_capacity_kwh: 83.5,
+      voltage_v: 400,
+      max_dc_charge_kw: 180
+    }
+  },
+  {
+    id: 'tesla-model-y-lr',
+    make: 'Tesla',
+    model: 'Model Y Long Range AWD',
+    cell_type: 'NMC',
+    mass_kg: 1979,
+    drag_coefficient: 0.23,
+    frontal_area_m2: 2.51,
+    rolling_resistance_coeff: 0.010,
+    drivetrain_efficiency: 0.94,
+    battery: {
+      total_capacity_kwh: 78.1,
+      usable_capacity_kwh: 75.0,
+      voltage_v: 400,
+      max_dc_charge_kw: 250
+    }
+  },
+  {
+    id: 'porsche-taycan-plus',
+    make: 'Porsche',
+    model: 'Taycan Performance Battery Plus',
+    cell_type: 'NMC',
+    mass_kg: 2220,
+    drag_coefficient: 0.22,
+    frontal_area_m2: 2.33,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.93,
+    battery: {
+      total_capacity_kwh: 93.4,
+      usable_capacity_kwh: 83.7,
+      voltage_v: 800,
+      max_dc_charge_kw: 270
+    }
+  }
+];
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'telemetry' | 'charging' | 'passport'>('telemetry');
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('togg-t10x-long');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Telemetri Simülasyonu State'leri
+  // Telemetri Parametreleri
   const [speed, setSpeed] = useState<number>(110);
   const [ambientTemp, setAmbientTemp] = useState<number>(20);
   const [grade, setGrade] = useState<number>(0);
   const [telemetryResult, setTelemetryResult] = useState<any>(null);
 
-  // Şarj Teşhisi State'leri
+  // Şarj Teşhisi Parametreleri
   const [soc, setSoc] = useState<number>(30);
   const [packTemp, setPackTemp] = useState<number>(32);
   const [insulationRes, setInsulationRes] = useState<number>(1200);
-  const [cpSignal, setCpSignal] = useState<number>(50);
   const [chargingResult, setChargingResult] = useState<any>(null);
 
-  // Batarya Pasaportu State'leri
+  // Batarya Pasaportu Parametreleri
   const [ageYears, setAgeYears] = useState<number>(4);
-  const [mileage, setMileage] = useState<number>(85000);
-  const [cycles, setCycles] = useState<number>(320);
+  const [cycles, setCycles] = useState<number>(350);
   const [fastChargeRatio, setFastChargeRatio] = useState<number>(0.3);
   const [passportResult, setPassportResult] = useState<any>(null);
 
-  // Araç listesini API'den çek
-  useEffect(() => {
-    fetch('/api/vehicles')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setVehicles(data.data);
+  const selectedVehicle = VEHICLES.find(v => v.id === selectedVehicleId) || VEHICLES[0];
+
+  // Fizik Motoru Hesaplama
+  const runTelemetrySim = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const v_ms = speed / 3.6;
+      const f_aero = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_ms ** 2);
+      const angle_rad = Math.atan(grade / 100);
+      const f_roll = selectedVehicle.rolling_resistance_coeff * selectedVehicle.mass_kg * 9.81 * Math.cos(angle_rad);
+      const f_grade = selectedVehicle.mass_kg * 9.81 * Math.sin(angle_rad);
+      const p_mech = ((f_aero + f_roll + f_grade) * v_ms) / 1000;
+
+      let hvac_power = 0.6;
+      if (ambientTemp < 15) hvac_power += (15 - ambientTemp) * 0.15;
+      if (ambientTemp > 25) hvac_power += (ambientTemp - 25) * 0.12;
+
+      let p_battery = (p_mech / selectedVehicle.drivetrain_efficiency) + hvac_power + 0.4;
+      p_battery = Math.max(0.5, p_battery);
+
+      const consumption = (p_battery / speed) * 100;
+      let usable_cap = selectedVehicle.battery.usable_capacity_kwh;
+      if (ambientTemp < 0) usable_cap *= (1 + (ambientTemp * 0.008));
+      const range = (usable_cap / consumption) * 100;
+
+      setTelemetryResult({
+        metrics: {
+          consumption_kwh_100km: Number(consumption.toFixed(1)),
+          estimated_range_km: Math.round(range)
+        },
+        physics: {
+          f_aero_n: f_aero,
+          f_roll_n: f_roll,
+          p_battery_kw: p_battery
+        },
+        thermal: {
+          effective_usable_kwh: Number(usable_cap.toFixed(1)),
+          hvac_power_kw: Number(hvac_power.toFixed(2))
         }
-      })
-      .catch(err => console.error('Araçlar yüklenemedi:', err));
-  }, []);
-
-  // Telemetri Simülasyonu Çalıştır
-  const runTelemetrySim = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/telemetry/simulate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vehicleId: selectedVehicleId,
-          speed_kmh: speed,
-          ambient_temp_c: ambientTemp,
-          grade_percent: grade
-        })
       });
-      const data = await res.json();
-      setTelemetryResult(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
       setLoading(false);
-    }
+    }, 150);
   };
 
-  // Şarj Teşhisi Çalıştır
-  const runChargingDiag = async () => {
+  // Şarj Teşhisi Hesaplama
+  const runChargingDiag = () => {
     setLoading(true);
-    try {
-      const res = await fetch('/api/charging/diagnose', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vehicleId: selectedVehicleId,
-          charger: {
-            id: 'trugo-hpc-300',
-            name: 'Trugo HPC 300kW',
-            max_power_kw: 300,
-            max_current_a: 500,
-            voltage_range_v: [200, 1000],
-            cooling_type: 'Liquid'
-          },
-          telemetry: {
-            current_soc_percent: soc,
-            pack_temp_c: packTemp,
-            cp_pwm_duty_cycle: cpSignal,
-            insulation_resistance_kohm: insulationRes
-          }
-        })
+    setTimeout(() => {
+      const faults: string[] = [];
+      let is_safe = true;
+      let power = selectedVehicle.battery.max_dc_charge_kw;
+
+      if (insulationRes < 500) {
+        faults.push('KRİTİK HATA: İzolasyon direnci 500 kΩ altında! DC kontaktörleri açıldı.');
+        is_safe = false;
+      }
+      if (packTemp > 55) {
+        faults.push('TERMAL KAÇAK RİSKİ: Batarya sıcaklığı >55°C. Acil durdurma tetiklendi.');
+        is_safe = false;
+      } else if (packTemp > 45) {
+        power *= 0.6;
+        faults.push('BMS KISITLAMASI: Yüksek sıcaklık sebebiyle şarj gücü %40 düşürüldü.');
+      }
+
+      if (soc > 80) power *= 0.4;
+      else if (soc > 60) power *= 0.7;
+
+      setChargingResult({
+        diagnostic: {
+          is_safe_to_charge: is_safe,
+          active_phase: is_safe ? 'PowerDelivery' : 'SessionStopped',
+          actual_charge_power_kw: is_safe ? Math.round(power) : 0,
+          fault_codes: faults
+        }
       });
-      const data = await res.json();
-      setChargingResult(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
       setLoading(false);
-    }
+    }, 150);
   };
 
-  // Batarya Pasaportu Çalıştır
-  const runPassportGen = async () => {
+  // Batarya Pasaportu Hesaplama
+  const runPassportGen = () => {
     setLoading(true);
-    try {
-      const res = await fetch('/api/battery/passport', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vehicleId: selectedVehicleId,
-          history: {
-            vehicle_age_years: ageYears,
-            total_mileage_km: mileage,
-            charge_cycles: cycles,
-            fast_charge_ratio: fastChargeRatio,
-            average_storage_soc: 70
+    setTimeout(() => {
+      const cal_deg = ageYears * 1.4;
+      const cyc_deg = (cycles / 1500) * 12;
+      const fast_deg = fastChargeRatio * (cycles / 500) * 4;
+      const total_loss = Number((cal_deg + cyc_deg + fast_deg).toFixed(1));
+      const soh = Number((100 - total_loss).toFixed(1));
+      const cur_cap = Number((selectedVehicle.battery.usable_capacity_kwh * (soh / 100)).toFixed(1));
+
+      setPassportResult({
+        passport: {
+          passport_id: `EU-BAT-${Math.random().toString(36).substring(2, 9).toUpperCase()}-2026`,
+          state_of_health_percent: soh,
+          current_capacity_kwh: cur_cap,
+          chemistry: selectedVehicle.cell_type,
+          second_life_status: soh >= 75 ? 'Optimal Araç Kullanımı' : 'Sabit Enerji Depolama (2. Ömür)',
+          carbon_footprint_kg_co2_kwh: selectedVehicle.cell_type === 'NMC' ? 73 : 58,
+          degradation_breakdown: {
+            calendar_aging_percent: Number(cal_deg.toFixed(1)),
+            cycle_aging_percent: Number(cyc_deg.toFixed(1)),
+            fast_charge_stress_percent: Number(fast_deg.toFixed(1))
           }
-        })
+        }
       });
-      const data = await res.json();
-      setPassportResult(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
       setLoading(false);
-    }
+    }, 150);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10 font-sans">
       {/* Header */}
       <header className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-8 border-b border-slate-800">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
-              <Zap className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">VoltPulse SDV</h1>
-              <p className="text-xs text-slate-400">Software-Defined Vehicle Diagnostic & Telemetry Suite</p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
+            <Zap className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">VoltPulse SDV</h1>
+            <p className="text-xs text-slate-400">Software-Defined Vehicle Diagnostic & Telemetry Suite</p>
           </div>
         </div>
 
-        {/* Global Araç Seçici */}
+        {/* Araç Seçici */}
         <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 p-2 rounded-xl">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-2">Aktif Model:</span>
           <select 
@@ -171,7 +237,7 @@ export default function App() {
             onChange={(e) => setSelectedVehicleId(e.target.value)}
             className="bg-slate-800 text-white font-medium text-sm rounded-lg px-3 py-1.5 outline-none border border-slate-700 focus:border-emerald-500 cursor-pointer"
           >
-            {vehicles.map(v => (
+            {VEHICLES.map(v => (
               <option key={v.id} value={v.id}>
                 {v.make} {v.model} ({v.cell_type} - {v.battery.voltage_v}V)
               </option>
@@ -190,8 +256,7 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <Activity className="w-4 h-4" />
-          Telemetri & Fizik Motoru
+          <Activity className="w-4 h-4" /> Telemetri & Fizik Motoru
         </button>
         <button
           onClick={() => setActiveTab('charging')}
@@ -201,8 +266,7 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <BatteryCharging className="w-4 h-4" />
-          ISO 15118 Şarj Teşhisi
+          <BatteryCharging className="w-4 h-4" /> ISO 15118 Şarj Teşhisi
         </button>
         <button
           onClick={() => setActiveTab('passport')}
@@ -212,14 +276,12 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <ShieldCheck className="w-4 h-4" />
-          Dijital Batarya Pasaportu
+          <ShieldCheck className="w-4 h-4" /> Dijital Batarya Pasaportu
         </button>
       </div>
 
-      {/* Ana İçerik Alanı */}
+      {/* Ana Ekran */}
       <main className="max-w-7xl mx-auto mt-8">
-        {/* 1. SEKMELİ ALAN: TELEMETRİ SİMÜLASYONU */}
         {activeTab === 'telemetry' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
@@ -227,7 +289,6 @@ export default function App() {
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Gauge className="w-5 h-5 text-emerald-400" /> Sürüş Koşulları
                 </h2>
-                
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-xs text-slate-400 mb-1">
@@ -276,7 +337,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Sonuç Kartları */}
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               {telemetryResult ? (
                 <>
@@ -288,7 +348,7 @@ export default function App() {
                     </div>
                     <div className="text-xs text-slate-400 flex items-center gap-1.5">
                       <Leaf className="w-4 h-4 text-emerald-400" />
-                      Efektif Pil: {telemetryResult.thermal.effective_usable_kwh} kWh
+                      Efektif Pil Kapasitesi: {telemetryResult.thermal.effective_usable_kwh} kWh
                     </div>
                   </div>
 
@@ -331,7 +391,6 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. SEKMELİ ALAN: ISO 15118 ŞARJ TEŞHİSİ */}
         {activeTab === 'charging' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
@@ -339,7 +398,6 @@ export default function App() {
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <BatteryCharging className="w-5 h-5 text-emerald-400" /> Şarj Parametreleri
                 </h2>
-                
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-xs text-slate-400 mb-1">
@@ -388,7 +446,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Teşhis Sonuçları */}
             <div className="lg:col-span-2">
               {chargingResult ? (
                 <div className="space-y-4">
@@ -434,14 +491,13 @@ export default function App() {
               ) : (
                 <div className="bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                   <BatteryCharging className="w-10 h-10 text-slate-600 mb-3" />
-                  <p className="text-sm text-slate-400">Şarj istasyonuna bağlanıp teşhis çalıştırın.</p>
+                  <p className="text-sm text-slate-400">Şarj simülasyonunu başlatın.</p>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* 3. SEKMELİ ALAN: DİJİTAL BATARYA PASAPORTU */}
         {activeTab === 'passport' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
@@ -449,7 +505,6 @@ export default function App() {
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-emerald-400" /> Kullanım Geçmişi
                 </h2>
-                
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-xs text-slate-400 mb-1">
@@ -498,14 +553,13 @@ export default function App() {
               </button>
             </div>
 
-            {/* Pasaport Kartı */}
             <div className="lg:col-span-2">
               {passportResult ? (
                 <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
                   <div className="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
                     <div>
                       <span className="text-xs font-mono text-emerald-400">{passportResult.passport.passport_id}</span>
-                      <h3 className="text-xl font-bold text-white mt-0.5">{passportResult.vehicle.make} {passportResult.vehicle.model}</h3>
+                      <h3 className="text-xl font-bold text-white mt-0.5">{selectedVehicle.make} {selectedVehicle.model}</h3>
                     </div>
                     <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-semibold">
                       {passportResult.passport.second_life_status}
@@ -534,13 +588,13 @@ export default function App() {
                   <div className="text-xs text-slate-400 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60 flex justify-between">
                     <span>Döngü Kaybı: %{passportResult.passport.degradation_breakdown.cycle_aging_percent}</span>
                     <span>Takvim Kaybı: %{passportResult.passport.degradation_breakdown.calendar_aging_percent}</span>
-                    <span>DC Hızlı Şarj Stresi: %{passportResult.passport.degradation_breakdown.fast_charge_stress_percent}</span>
+                    <span>DC Şarj Stresi: %{passportResult.passport.degradation_breakdown.fast_charge_stress_percent}</span>
                   </div>
                 </div>
               ) : (
                 <div className="bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                   <ShieldCheck className="w-10 h-10 text-slate-600 mb-3" />
-                  <p className="text-sm text-slate-400">Batarya geçmişini girerek EU 2023/1542 sertifikasını görüntüleyin.</p>
+                  <p className="text-sm text-slate-400">EU 2023/1542 batarya sertifikası üretmek için parametreleri seçin.</p>
                 </div>
               )}
             </div>
