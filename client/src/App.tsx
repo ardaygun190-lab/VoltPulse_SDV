@@ -30,6 +30,7 @@ interface Vehicle {
 }
 
 const VEHICLES: Vehicle[] = [
+  // --- YERLİ & ÇOK SATANLAR ---
   {
     id: 'togg-t10x-long',
     make: 'Togg',
@@ -40,12 +41,7 @@ const VEHICLES: Vehicle[] = [
     frontal_area_m2: 2.55,
     rolling_resistance_coeff: 0.011,
     drivetrain_efficiency: 0.92,
-    battery: {
-      total_capacity_kwh: 88.5,
-      usable_capacity_kwh: 83.5,
-      voltage_v: 400,
-      max_dc_charge_kw: 180
-    }
+    battery: { total_capacity_kwh: 88.5, usable_capacity_kwh: 83.5, voltage_v: 400, max_dc_charge_kw: 180 }
   },
   {
     id: 'tesla-model-y-lr',
@@ -57,29 +53,241 @@ const VEHICLES: Vehicle[] = [
     frontal_area_m2: 2.51,
     rolling_resistance_coeff: 0.010,
     drivetrain_efficiency: 0.94,
-    battery: {
-      total_capacity_kwh: 78.1,
-      usable_capacity_kwh: 75.0,
-      voltage_v: 400,
-      max_dc_charge_kw: 250
-    }
+    battery: { total_capacity_kwh: 78.1, usable_capacity_kwh: 75.0, voltage_v: 400, max_dc_charge_kw: 250 }
   },
+  {
+    id: 'tesla-model-3-lr',
+    make: 'Tesla',
+    model: 'Model 3 Highland Long Range',
+    cell_type: 'NMC',
+    mass_kg: 1828,
+    drag_coefficient: 0.219,
+    frontal_area_m2: 2.22,
+    rolling_resistance_coeff: 0.0095,
+    drivetrain_efficiency: 0.95,
+    battery: { total_capacity_kwh: 78.1, usable_capacity_kwh: 75.0, voltage_v: 400, max_dc_charge_kw: 250 }
+  },
+  {
+    id: 'tesla-cybertruck',
+    make: 'Tesla',
+    model: 'Cybertruck Dual Motor AWD',
+    cell_type: 'NMC',
+    mass_kg: 3009,
+    drag_coefficient: 0.335,
+    frontal_area_m2: 3.65,
+    rolling_resistance_coeff: 0.0135,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 123.0, usable_capacity_kwh: 120.0, voltage_v: 800, max_dc_charge_kw: 250 }
+  },
+
+  // --- 800V & ULTRA HIZLI ŞARJ MODELLERİ ---
   {
     id: 'porsche-taycan-plus',
     make: 'Porsche',
-    model: 'Taycan Performance Battery Plus',
+    model: 'Taycan Turbo S Plus (800V)',
     cell_type: 'NMC',
     mass_kg: 2220,
     drag_coefficient: 0.22,
     frontal_area_m2: 2.33,
     rolling_resistance_coeff: 0.011,
     drivetrain_efficiency: 0.93,
-    battery: {
-      total_capacity_kwh: 93.4,
-      usable_capacity_kwh: 83.7,
-      voltage_v: 800,
-      max_dc_charge_kw: 270
-    }
+    battery: { total_capacity_kwh: 93.4, usable_capacity_kwh: 83.7, voltage_v: 800, max_dc_charge_kw: 270 }
+  },
+  {
+    id: 'hyundai-ioniq-5-awd',
+    make: 'Hyundai',
+    model: 'Ioniq 5 AWD Long Range (800V)',
+    cell_type: 'NMC',
+    mass_kg: 2095,
+    drag_coefficient: 0.288,
+    frontal_area_m2: 2.54,
+    rolling_resistance_coeff: 0.0105,
+    drivetrain_efficiency: 0.93,
+    battery: { total_capacity_kwh: 84.0, usable_capacity_kwh: 80.0, voltage_v: 800, max_dc_charge_kw: 240 }
+  },
+  {
+    id: 'hyundai-ioniq-6-lr',
+    make: 'Hyundai',
+    model: 'Ioniq 6 Streamliner (800V)',
+    cell_type: 'NMC',
+    mass_kg: 1985,
+    drag_coefficient: 0.21,
+    frontal_area_m2: 2.40,
+    rolling_resistance_coeff: 0.010,
+    drivetrain_efficiency: 0.94,
+    battery: { total_capacity_kwh: 77.4, usable_capacity_kwh: 74.0, voltage_v: 800, max_dc_charge_kw: 233 }
+  },
+  {
+    id: 'kia-ev6-gtline',
+    make: 'Kia',
+    model: 'EV6 GT-Line AWD (800V)',
+    cell_type: 'NMC',
+    mass_kg: 2090,
+    drag_coefficient: 0.28,
+    frontal_area_m2: 2.50,
+    rolling_resistance_coeff: 0.0105,
+    drivetrain_efficiency: 0.93,
+    battery: { total_capacity_kwh: 77.4, usable_capacity_kwh: 74.0, voltage_v: 800, max_dc_charge_kw: 233 }
+  },
+  {
+    id: 'kia-ev9-awd',
+    make: 'Kia',
+    model: 'EV9 GT-Line 7-Seater (800V)',
+    cell_type: 'NMC',
+    mass_kg: 2560,
+    drag_coefficient: 0.28,
+    frontal_area_m2: 3.10,
+    rolling_resistance_coeff: 0.0115,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 99.8, usable_capacity_kwh: 95.2, voltage_v: 800, max_dc_charge_kw: 210 }
+  },
+  {
+    id: 'lucid-air-gt',
+    make: 'Lucid',
+    model: 'Air Grand Touring (900V)',
+    cell_type: 'NMC',
+    mass_kg: 2375,
+    drag_coefficient: 0.197,
+    frontal_area_m2: 2.37,
+    rolling_resistance_coeff: 0.0098,
+    drivetrain_efficiency: 0.96,
+    battery: { total_capacity_kwh: 118.0, usable_capacity_kwh: 112.0, voltage_v: 900, max_dc_charge_kw: 300 }
+  },
+
+  // --- BLADE & LFP KİMYALI MODELLER ---
+  {
+    id: 'byd-seal-awd',
+    make: 'BYD',
+    model: 'Seal AWD Excellence (Blade LFP)',
+    cell_type: 'LFP',
+    mass_kg: 2185,
+    drag_coefficient: 0.219,
+    frontal_area_m2: 2.29,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 82.5, usable_capacity_kwh: 82.5, voltage_v: 550, max_dc_charge_kw: 150 }
+  },
+  {
+    id: 'byd-atto-3',
+    make: 'BYD',
+    model: 'Atto 3 Design (Blade LFP)',
+    cell_type: 'LFP',
+    mass_kg: 1750,
+    drag_coefficient: 0.29,
+    frontal_area_m2: 2.52,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.91,
+    battery: { total_capacity_kwh: 60.5, usable_capacity_kwh: 60.5, voltage_v: 400, max_dc_charge_kw: 88 }
+  },
+  {
+    id: 'byd-dolphin',
+    make: 'BYD',
+    model: 'Dolphin Comfort (Blade LFP)',
+    cell_type: 'LFP',
+    mass_kg: 1658,
+    drag_coefficient: 0.31,
+    frontal_area_m2: 2.38,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.91,
+    battery: { total_capacity_kwh: 60.4, usable_capacity_kwh: 60.4, voltage_v: 400, max_dc_charge_kw: 88 }
+  },
+  {
+    id: 'mg4-electric-64',
+    make: 'MG',
+    model: 'MG4 Electric Luxury 64kWh',
+    cell_type: 'NMC',
+    mass_kg: 1685,
+    drag_coefficient: 0.287,
+    frontal_area_m2: 2.41,
+    rolling_resistance_coeff: 0.0108,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 64.0, usable_capacity_kwh: 61.7, voltage_v: 400, max_dc_charge_kw: 135 }
+  },
+
+  // --- AVRUPA PREMİUM & KOMPAKT MODELLER ---
+  {
+    id: 'bmw-i4-edrive40',
+    make: 'BMW',
+    model: 'i4 eDrive40 Gran Coupe',
+    cell_type: 'NMC',
+    mass_kg: 2050,
+    drag_coefficient: 0.24,
+    frontal_area_m2: 2.31,
+    rolling_resistance_coeff: 0.010,
+    drivetrain_efficiency: 0.93,
+    battery: { total_capacity_kwh: 83.9, usable_capacity_kwh: 80.7, voltage_v: 400, max_dc_charge_kw: 205 }
+  },
+  {
+    id: 'bmw-ix-xdrive50',
+    make: 'BMW',
+    model: 'iX xDrive50 Flagship SUV',
+    cell_type: 'NMC',
+    mass_kg: 2510,
+    drag_coefficient: 0.25,
+    frontal_area_m2: 2.82,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 111.5, usable_capacity_kwh: 105.2, voltage_v: 400, max_dc_charge_kw: 195 }
+  },
+  {
+    id: 'mercedes-eqs-450',
+    make: 'Mercedes-Benz',
+    model: 'EQS 450+ Hyperscreen',
+    cell_type: 'NMC',
+    mass_kg: 2480,
+    drag_coefficient: 0.20,
+    frontal_area_m2: 2.51,
+    rolling_resistance_coeff: 0.0098,
+    drivetrain_efficiency: 0.94,
+    battery: { total_capacity_kwh: 108.4, usable_capacity_kwh: 107.8, voltage_v: 400, max_dc_charge_kw: 200 }
+  },
+  {
+    id: 'volkswagen-id4-pro',
+    make: 'Volkswagen',
+    model: 'ID.4 Pro Performance',
+    cell_type: 'NMC',
+    mass_kg: 2120,
+    drag_coefficient: 0.28,
+    frontal_area_m2: 2.65,
+    rolling_resistance_coeff: 0.0108,
+    drivetrain_efficiency: 0.92,
+    battery: { total_capacity_kwh: 82.0, usable_capacity_kwh: 77.0, voltage_v: 400, max_dc_charge_kw: 135 }
+  },
+  {
+    id: 'volvo-ex30-er',
+    make: 'Volvo',
+    model: 'EX30 Extended Range Ultra',
+    cell_type: 'NMC',
+    mass_kg: 1830,
+    drag_coefficient: 0.28,
+    frontal_area_m2: 2.45,
+    rolling_resistance_coeff: 0.0105,
+    drivetrain_efficiency: 0.93,
+    battery: { total_capacity_kwh: 69.0, usable_capacity_kwh: 64.0, voltage_v: 400, max_dc_charge_kw: 153 }
+  },
+  {
+    id: 'renault-megane-e-tech',
+    make: 'Renault',
+    model: 'Megane E-Tech Iconic EV60',
+    cell_type: 'NMC',
+    mass_kg: 1636,
+    drag_coefficient: 0.29,
+    frontal_area_m2: 2.38,
+    rolling_resistance_coeff: 0.010,
+    drivetrain_efficiency: 0.91,
+    battery: { total_capacity_kwh: 60.0, usable_capacity_kwh: 60.0, voltage_v: 400, max_dc_charge_kw: 130 }
+  },
+  {
+    id: 'renault-zoe-ze50',
+    make: 'Renault',
+    model: 'Zoe E-Tech R135 ZE50',
+    cell_type: 'NMC',
+    mass_kg: 1502,
+    drag_coefficient: 0.31,
+    frontal_area_m2: 2.35,
+    rolling_resistance_coeff: 0.011,
+    drivetrain_efficiency: 0.89,
+    battery: { total_capacity_kwh: 54.7, usable_capacity_kwh: 52.0, voltage_v: 400, max_dc_charge_kw: 50 }
   }
 ];
 
@@ -126,7 +334,7 @@ export default function App() {
       let p_battery = (p_mech / selectedVehicle.drivetrain_efficiency) + hvac_power + 0.4;
       p_battery = Math.max(0.5, p_battery);
 
-      const consumption = (p_battery / speed) * 100;
+      const consumption = (p_battery / (speed || 1)) * 100;
       let usable_cap = selectedVehicle.battery.usable_capacity_kwh;
       if (ambientTemp < 0) usable_cap *= (1 + (ambientTemp * 0.008));
       const range = (usable_cap / consumption) * 100;
@@ -147,7 +355,7 @@ export default function App() {
         }
       });
       setLoading(false);
-    }, 150);
+    }, 120);
   };
 
   // Şarj Teşhisi Hesaplama
@@ -182,7 +390,7 @@ export default function App() {
         }
       });
       setLoading(false);
-    }, 150);
+    }, 120);
   };
 
   // Batarya Pasaportu Hesaplama
@@ -193,7 +401,7 @@ export default function App() {
       const cyc_deg = (cycles / 1500) * 12;
       const fast_deg = fastChargeRatio * (cycles / 500) * 4;
       const total_loss = Number((cal_deg + cyc_deg + fast_deg).toFixed(1));
-      const soh = Number((100 - total_loss).toFixed(1));
+      const soh = Number(Math.max(40, 100 - total_loss).toFixed(1));
       const cur_cap = Number((selectedVehicle.battery.usable_capacity_kwh * (soh / 100)).toFixed(1));
 
       setPassportResult({
@@ -212,11 +420,11 @@ export default function App() {
         }
       });
       setLoading(false);
-    }, 150);
+    }, 120);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10 font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-10 font-sans">
       {/* Header */}
       <header className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-8 border-b border-slate-800">
         <div className="flex items-center gap-3">
@@ -230,12 +438,12 @@ export default function App() {
         </div>
 
         {/* Araç Seçici */}
-        <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 p-2 rounded-xl">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-2">Aktif Model:</span>
+        <div className="w-full md:w-auto flex items-center gap-3 bg-slate-900 border border-slate-800 p-2 rounded-xl">
+          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-2 whitespace-nowrap">Model:</span>
           <select 
             value={selectedVehicleId} 
             onChange={(e) => setSelectedVehicleId(e.target.value)}
-            className="bg-slate-800 text-white font-medium text-sm rounded-lg px-3 py-1.5 outline-none border border-slate-700 focus:border-emerald-500 cursor-pointer"
+            className="w-full md:w-auto bg-slate-800 text-white font-medium text-sm rounded-lg px-3 py-1.5 outline-none border border-slate-700 focus:border-emerald-500 cursor-pointer"
           >
             {VEHICLES.map(v => (
               <option key={v.id} value={v.id}>
@@ -247,7 +455,7 @@ export default function App() {
       </header>
 
       {/* Navigasyon Tab Bar */}
-      <div className="max-w-7xl mx-auto mt-6 flex gap-2 border-b border-slate-800/80 pb-4">
+      <div className="max-w-7xl mx-auto mt-6 flex flex-wrap gap-2 border-b border-slate-800/80 pb-4">
         <button
           onClick={() => setActiveTab('telemetry')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
