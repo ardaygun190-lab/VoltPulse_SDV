@@ -368,12 +368,13 @@ export default function App() {
   const [routeTemp, setRouteTemp] = useState<number>(24);
   const [routePlanResult, setRoutePlanResult] = useState<any>(null);
 
-  // --- 2. ACİL MENZİL KURTARICI CANLI REAKTİF STATE ---
-  const [currentSoc, setCurrentSoc] = useState<number>(10);
+  // --- 2. ACİL MENZİL KURTARICI BUTONLU STATE ---
+  const [currentSoc, setCurrentSoc] = useState<number>(12);
   const [chargerDistance, setChargerDistance] = useState<number>(45);
   const [currentDrivingSpeed, setCurrentDrivingSpeed] = useState<number>(125);
   const [cabinAcActive, setCabinAcActive] = useState<boolean>(true);
   const [ambientConditionsTemp, setAmbientConditionsTemp] = useState<number>(6);
+  const [rescueResult, setRescueResult] = useState<any>(null);
 
   // --- 3. TELEMETRİ STATE ---
   const [speed, setSpeed] = useState<number>(110);
@@ -429,65 +430,66 @@ export default function App() {
     setDestDistrictId(p.districts[0].id);
   };
 
-  // --- MENZİL KURTARICI CANLI FİZİK HESABI (CANLI & KESİNTİSİZ) ---
-  const liveRescueAnalysis = useMemo(() => {
-    const currKwh = selectedVehicle.battery.usable_capacity_kwh * (currentSoc / 100);
+  // --- MENZİL KURTARICI SİMÜLE ET BUTONU FONKSİYONU ---
+  const runRescueAssistant = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const currentUsableKwh = selectedVehicle.battery.usable_capacity_kwh * (currentSoc / 100);
 
-    // 1. Mevcut sürüş tüketimi
-    const v_curr_ms = currentDrivingSpeed / 3.6;
-    const f_aero_curr = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_curr_ms ** 2);
-    const f_roll_curr = selectedVehicle.rolling_resistance_coeff * selectedVehicle.mass_kg * 9.81;
-    const p_mech_curr = ((f_aero_curr + f_roll_curr) * v_curr_ms) / 1000;
-    
-    let hvac_curr = 0.2;
-    if (cabinAcActive) {
-      if (ambientConditionsTemp < 10) hvac_curr = 3.2 + (10 - ambientConditionsTemp) * 0.1;
-      else if (ambientConditionsTemp > 25) hvac_curr = 2.0 + (ambientConditionsTemp - 25) * 0.1;
-      else hvac_curr = 1.2;
-    }
-    const p_batt_curr = (p_mech_curr / selectedVehicle.drivetrain_efficiency) + hvac_curr + 0.3;
-    const cons_100_curr = (p_batt_curr / Math.max(1, currentDrivingSpeed)) * 100;
-    
-    const maxRangeAsIs = (currKwh / Math.max(0.1, cons_100_curr)) * 100;
-    const energyNeededAsIs = (chargerDistance / 100) * cons_100_curr;
-    const isSafe = currKwh >= energyNeededAsIs;
-    const arrivalSocAsIs = Math.max(0, Math.round(((currKwh - energyNeededAsIs) / selectedVehicle.battery.usable_capacity_kwh) * 100));
-    const deadKm = !isSafe ? Number(maxRangeAsIs.toFixed(1)) : null;
+      // 1. Mevcut sürüş tüketimi
+      const v_curr_ms = currentDrivingSpeed / 3.6;
+      const f_aero_curr = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_curr_ms ** 2);
+      const f_roll_curr = selectedVehicle.rolling_resistance_coeff * selectedVehicle.mass_kg * 9.81;
+      const p_mech_curr = ((f_aero_curr + f_roll_curr) * v_curr_ms) / 1000;
 
-    // 2. Kurtarma Modu (Eko Sürüş: 80 km/h veya mevcut hız, HVAC kapalı)
-    const optSpeed = Math.min(80, currentDrivingSpeed);
-    const v_opt_ms = optSpeed / 3.6;
-    const f_aero_opt = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_opt_ms ** 2);
-    const p_mech_opt = ((f_aero_opt + f_roll_curr) * v_opt_ms) / 1000;
-    const hvac_opt = 0.15; // Sadece koltuk ısıtıcı
-    const p_batt_opt = (p_mech_opt / selectedVehicle.drivetrain_efficiency) + hvac_opt + 0.25;
-    const cons_opt_100 = (p_batt_opt / Math.max(1, optSpeed)) * 100;
+      let hvac_curr = 0.2;
+      if (cabinAcActive) {
+        if (ambientConditionsTemp < 10) hvac_curr = 3.2 + (10 - ambientConditionsTemp) * 0.1;
+        else if (ambientConditionsTemp > 25) hvac_curr = 2.0 + (ambientConditionsTemp - 25) * 0.1;
+        else hvac_curr = 1.2;
+      }
+      const p_battery_curr = (p_mech_curr / selectedVehicle.drivetrain_efficiency) + hvac_curr + 0.3;
+      const currentConsumption100 = (p_battery_curr / Math.max(1, currentDrivingSpeed)) * 100;
+      const neededEnergyCurrKwh = (chargerDistance / 100) * currentConsumption100;
 
-    const energyNeededOpt = (chargerDistance / 100) * cons_opt_100;
-    const optMaxRange = (currKwh / Math.max(0.1, cons_opt_100)) * 100;
-    const optArrivalSoc = Math.max(0, Math.round(((currKwh - energyNeededOpt) / selectedVehicle.battery.usable_capacity_kwh) * 100));
-    const energySaved = Number(Math.max(0, energyNeededAsIs - energyNeededOpt).toFixed(1));
+      const maxRangeAsIs = (currentUsableKwh / Math.max(0.1, currentConsumption100)) * 100;
+      const isSafeAsIs = currentUsableKwh >= neededEnergyCurrKwh;
+      const arrivalSocAsIs = Math.max(0, Math.round(((currentUsableKwh - neededEnergyCurrKwh) / selectedVehicle.battery.usable_capacity_kwh) * 100));
+      const deadDistanceKm = !isSafeAsIs ? Number(maxRangeAsIs.toFixed(1)) : null;
 
-    const timeCurrMin = (chargerDistance / currentDrivingSpeed) * 60;
-    const timeOptMin = (chargerDistance / optSpeed) * 60;
-    const timeDelayMin = Math.max(0, Math.round(timeOptMin - timeCurrMin));
-    const canReachWithRescue = currKwh >= energyNeededOpt;
+      // 2. Kurtarma Modu (Eko Sürüş: 80 km/h veya mevcut hız, HVAC kapalı)
+      const optimalSpeed = Math.min(80, currentDrivingSpeed);
+      const v_opt_ms = optimalSpeed / 3.6;
+      const f_aero_opt = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_opt_ms ** 2);
+      const p_mech_opt = ((f_aero_opt + f_roll_curr) * v_opt_ms) / 1000;
+      const hvac_opt = 0.15; // Koltuk ısıtıcı modu
+      const p_battery_opt = (p_mech_opt / selectedVehicle.drivetrain_efficiency) + hvac_opt + 0.25;
+      const optimalConsumption100 = (p_battery_opt / Math.max(1, optimalSpeed)) * 100;
+      const neededEnergyOptKwh = (chargerDistance / 100) * optimalConsumption100;
 
-    return {
-      isSafe,
-      currConsumption: Number(cons_100_curr.toFixed(1)),
-      maxRangeAsIs: Number(maxRangeAsIs.toFixed(1)),
-      arrivalSocAsIs,
-      deadKm,
-      optSpeed,
-      optConsumption: Number(cons_opt_100.toFixed(1)),
-      optMaxRange: Number(optMaxRange.toFixed(1)),
-      optArrivalSoc,
-      energySaved,
-      timeDelayMin,
-      canReachWithRescue
-    };
-  }, [selectedVehicle, currentSoc, chargerDistance, currentDrivingSpeed, cabinAcActive, ambientConditionsTemp]);
+      const rescuedArrivalSoc = Math.max(0, Math.round(((currentUsableKwh - neededEnergyOptKwh) / selectedVehicle.battery.usable_capacity_kwh) * 100));
+      const energySavedKwh = Number(Math.max(0, neededEnergyCurrKwh - neededEnergyOptKwh).toFixed(1));
+
+      const timeCurrMin = (chargerDistance / currentDrivingSpeed) * 60;
+      const timeOptMin = (chargerDistance / optimalSpeed) * 60;
+      const timeDelayMin = Math.max(0, Math.round(timeOptMin - timeCurrMin));
+      const canReachWithRescue = currentUsableKwh >= neededEnergyOptKwh;
+
+      setRescueResult({
+        is_safe_as_is: isSafeAsIs,
+        dead_distance_km: deadDistanceKm,
+        current_consumption: Number(currentConsumption100.toFixed(1)),
+        arrival_soc_as_is: arrivalSocAsIs,
+        optimal_speed: optimalSpeed,
+        optimal_consumption: Number(optimalConsumption100.toFixed(1)),
+        energy_saved_kwh: energySavedKwh,
+        projected_arrival_soc: rescuedArrivalSoc,
+        time_delay_min: timeDelayMin,
+        can_reach_with_rescue: canReachWithRescue
+      });
+      setLoading(false);
+    }, 120);
+  };
 
   // --- HAVERSINE GERÇEK KARAYOLU MESAFE HESABI ---
   const calculateDistanceKm = (d1: DistrictItem, d2: DistrictItem) => {
@@ -1028,7 +1030,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. SEKME: ACİL MENZİL KURTARICI (CANLI & ANLIK HESAPLAMA) */}
+        {/* 2. SEKME: ACİL MENZİL KURTARICI (BUTONLU SİMÜLASYON) */}
         {activeTab === 'saver' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
@@ -1096,83 +1098,99 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="mt-6 p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 text-center">
-                ⚡ Parametreleri değiştikçe kurtarma planı <strong>canlı olarak</strong> hesaplanır.
-              </div>
+              <button
+                onClick={runRescueAssistant}
+                disabled={loading}
+                className="mt-6 w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2"
+              >
+                {loading ? 'Fizik & Kurtarma Hesaplanıyor...' : 'Menzil Kurtarma Planını Simüle Et'}
+              </button>
             </div>
 
-            {/* Reçete Çıktısı (Canlı & Otomatik) */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Ana Durum Banner'ı */}
-              <div className={`p-6 rounded-2xl border flex items-start justify-between ${
-                liveRescueAnalysis.isSafe 
-                  ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300' 
-                  : 'bg-rose-950/30 border-rose-500/50 text-rose-300'
-              }`}>
-                <div className="flex items-start gap-3.5">
-                  {liveRescueAnalysis.isSafe ? (
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400 shrink-0 mt-0.5" />
-                  ) : (
-                    <ShieldAlert className="w-8 h-8 text-rose-400 shrink-0 mt-0.5 animate-pulse" />
-                  )}
-                  <div>
-                    <h3 className="text-lg font-bold text-white">
-                      {liveRescueAnalysis.isSafe 
-                        ? 'Mevcut Hızla Güvenle Ulaşabilirsiniz' 
-                        : '🚨 KRİTİK UYARI: Bu Sürüşle Yolda Kalırsınız!'}
-                    </h3>
-                    <p className="text-xs text-slate-300 mt-1">
-                      {liveRescueAnalysis.isSafe 
-                        ? `Mevcut tüketiminizle (${liveRescueAnalysis.currConsumption} kWh/100km) şarj istasyonuna %${liveRescueAnalysis.arrivalSocAsIs} batarya ile varacaksınız.` 
-                        : `Mevcut tüketiminizle (${liveRescueAnalysis.currConsumption} kWh/100km) bataryanız istasyona ${liveRescueAnalysis.deadKm}. kilometrede tamamen tükenecektir (%0)!`}
-                    </p>
+            {/* Reçete Çıktısı */}
+            <div className="lg:col-span-2">
+              {rescueResult ? (
+                <div className="space-y-4">
+                  {/* Ana Durum Kartı */}
+                  <div className={`p-6 rounded-2xl border flex items-start justify-between ${
+                    rescueResult.is_safe_as_is 
+                      ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300' 
+                      : 'bg-rose-950/30 border-rose-500/50 text-rose-300'
+                  }`}>
+                    <div className="flex items-start gap-3.5">
+                      {rescueResult.is_safe_as_is ? (
+                        <CheckCircle2 className="w-8 h-8 text-emerald-400 shrink-0 mt-0.5" />
+                      ) : (
+                        <ShieldAlert className="w-8 h-8 text-rose-400 shrink-0 mt-0.5 animate-pulse" />
+                      )}
+                      <div>
+                        <h3 className="text-lg font-bold text-white">
+                          {rescueResult.is_safe_as_is 
+                            ? 'Mevcut Hızla Güvenle Ulaşabilirsiniz' 
+                            : '🚨 KRİTİK UYARI: Bu Sürüşle Yolda Kalırsınız!'}
+                        </h3>
+                        <p className="text-xs text-slate-300 mt-1">
+                          {rescueResult.is_safe_as_is 
+                            ? `Mevcut tüketiminizle (${rescueResult.current_consumption} kWh/100km) şarj istasyonuna %${rescueResult.arrival_soc_as_is} batarya ile varacaksınız.` 
+                            : `Mevcut tüketiminizle (${rescueResult.current_consumption} kWh/100km) bataryanız istasyona ${rescueResult.dead_distance_km}. kilometrede tamamen tükenecektir (%0)!`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kurtarma Reçetesi Kartı */}
+                  <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl">
+                    <h4 className="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Flame className="w-4 h-4" /> Hayat Kurtaran Acil Sürüş Reçetesi
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                        <span className="text-xs text-slate-400">Hedef Hız Sabitleme</span>
+                        <p className="text-2xl font-black text-amber-400 mt-1">{rescueResult.optimal_speed} <span className="text-xs font-normal text-slate-400">km/h</span></p>
+                        <span className="text-[10px] text-slate-400">Tüketim: {rescueResult.optimal_consumption} kWh/100</span>
+                      </div>
+
+                      <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                        <span className="text-xs text-slate-400">Kazanılan Net Enerji</span>
+                        <p className="text-2xl font-black text-emerald-400 mt-1">+{rescueResult.energy_saved_kwh} <span className="text-xs font-normal text-slate-400">kWh</span></p>
+                        <span className="text-[10px] text-slate-400">HVAC kapalı + Eko Seyir</span>
+                      </div>
+
+                      <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                        <span className="text-xs text-slate-400">İstasyona Varış Şarjı</span>
+                        <p className="text-2xl font-black text-cyan-400 mt-1">%{rescueResult.projected_arrival_soc}</p>
+                        <span className="text-[10px] text-slate-400">
+                          {rescueResult.can_reach_with_rescue ? 'Güvenli tampon bölge' : 'En yakın AC yavaş prize yönelin'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 text-xs text-slate-300">
+                      <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
+                        <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span><strong>Klima & Isıtıcıyı Kapatın:</strong> Kabin fanını kapatın, gerekiyorsa sadece koltuk ısıtmasını açın (Isıtıcı 3500W çekerken koltuk ısıtıcı yalnızca 120W tüketir).</span>
+                      </div>
+                      <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
+                        <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span><strong>Sağ Şerit & Tek Pedal:</strong> Otoyolda sağ şeride geçip hızı {rescueResult.optimal_speed} km/h'ye sabitleyin, rejenerasyonu maksimuma alın.</span>
+                      </div>
+                      <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
+                        <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span><strong>Zaman Kaybı:</strong> Bu eko sürüş ile istasyona yalnızca <strong>{rescueResult.time_delay_min} dakika</strong> gecikmeyle, ancak çekici çağırmadan ulaşırsınız.</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Kurtarma Reçetesi Kartı */}
-              <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl">
-                <h4 className="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <Flame className="w-4 h-4" /> Hayat Kurtaran Acil Sürüş Reçetesi
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                    <span className="text-xs text-slate-400">Hedef Hız Sabitleme</span>
-                    <p className="text-2xl font-black text-amber-400 mt-1">{liveRescueAnalysis.optSpeed} <span className="text-xs font-normal text-slate-400">km/h</span></p>
-                    <span className="text-[10px] text-slate-400">Tüketim: {liveRescueAnalysis.optConsumption} kWh/100</span>
-                  </div>
-
-                  <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                    <span className="text-xs text-slate-400">Kazanılan Net Enerji</span>
-                    <p className="text-2xl font-black text-emerald-400 mt-1">+{liveRescueAnalysis.energySaved} <span className="text-xs font-normal text-slate-400">kWh</span></p>
-                    <span className="text-[10px] text-slate-400">HVAC kapalı + Eko Seyir</span>
-                  </div>
-
-                  <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-                    <span className="text-xs text-slate-400">İstasyona Varış Şarjı</span>
-                    <p className="text-2xl font-black text-cyan-400 mt-1">%{liveRescueAnalysis.optArrivalSoc}</p>
-                    <span className="text-[10px] text-slate-400">
-                      {liveRescueAnalysis.canReachWithRescue ? 'Güvenli tampon bölge' : 'En yakın AC yavaş prize yönelin'}
-                    </span>
-                  </div>
+              ) : (
+                <div className="h-full min-h-[320px] bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+                  <LifeBuoy className="w-12 h-12 text-amber-500/40 mb-3" />
+                  <h3 className="text-base font-semibold text-slate-300">Menzil Kurtarma Asistanı Hazır</h3>
+                  <p className="text-xs text-slate-500 max-w-md mt-1">
+                    Kalan bataryanız ve istasyon mesafenizi girip "Menzil Kurtarma Planını Simüle Et" butonuna basarak acil durum reçetesini çıkarın.
+                  </p>
                 </div>
-
-                <div className="space-y-2.5 text-xs text-slate-300">
-                  <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
-                    <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span><strong>Klima & Isıtıcıyı Kapatın:</strong> Kabin fanını kapatın, gerekiyorsa sadece koltuk ısıtmasını açın (Isıtıcı 3500W çekerken koltuk ısıtıcı yalnızca 120W tüketir).</span>
-                  </div>
-                  <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
-                    <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span><strong>Sağ Şerit & Tek Pedal:</strong> Otoyolda sağ şeride geçip hızı {liveRescueAnalysis.optSpeed} km/h'ye sabitleyin, rejenerasyonu maksimuma alın.</span>
-                  </div>
-                  <div className="p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center gap-2.5">
-                    <ArrowRight className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span><strong>Zaman Kaybı:</strong> Bu eko sürüş ile istasyona yalnızca <strong>{liveRescueAnalysis.timeDelayMin} dakika</strong> gecikmeyle, ancak çekici çağırmadan ulaşırsınız.</span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}
