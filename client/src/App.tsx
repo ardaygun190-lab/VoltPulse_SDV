@@ -251,7 +251,7 @@ const VEHICLES: Vehicle[] = [
   }
 ];
 
-// --- 81 İL VE İLÇELERİ YERLEŞİK VERİTABANI ---
+// --- SIRALI PLAKA KODLU ŞEHİR VE İLÇE VERİTABANI (01 -> 81) ---
 interface DistrictItem {
   id: string;
   name: string;
@@ -269,16 +269,19 @@ interface ProvinceItem {
 
 const TURKEY_PROVINCES: ProvinceItem[] = [
   {
-    id: 'istanbul',
-    name: '34 İstanbul',
+    id: 'adana',
+    name: '01 Adana',
     districts: [
-      { id: 'pendik', name: 'Pendik', lat: 40.8752, lon: 29.2325, elevation_m: 55, sampleNeighborhoods: ['Kurtköy (Sabiha Gökçen / Teknopark)', 'Batı Mah. (Marina / Sahil)', 'Yenişehir (Lens / Atlantis)', 'Kaynarca (Marmara EAH)', 'Güzelyalı (YHT)'] },
-      { id: 'kadikoy', name: 'Kadıköy', lat: 40.9850, lon: 29.0270, elevation_m: 25, sampleNeighborhoods: ['Caferağa (Moda Sahil)', 'Caddebostan (Bağdat Caddesi)', 'Fenerbahçe Orduevi Çevresi', 'Fikirtepe', 'Suadiye', 'Bostancı İskele'] },
-      { id: 'sariyer', name: 'Sarıyer', lat: 41.1090, lon: 29.0220, elevation_m: 110, sampleNeighborhoods: ['Maslak (İTÜ / Finans)', 'İstinye Marina / Park', 'Tarabya Sahili', 'Zekeriyaköy Evleri', 'Yeniköy Boğaz'] },
-      { id: 'besiktas', name: 'Beşiktaş', lat: 41.0820, lon: 29.0140, elevation_m: 60, sampleNeighborhoods: ['Levent (Kanyon / Zorlu)', 'Bebek Koyu', 'Etiler Nispetiye', 'Ortaköy Meydanı', 'Gayrettepe'] },
-      { id: 'uskudar', name: 'Üsküdar', lat: 41.0220, lon: 29.0420, elevation_m: 45, sampleNeighborhoods: ['Altunizade (Köprü Çıkışı)', 'Çengelköy Sahil', 'Beylerbeyi Sarayı Çevresi', 'Kuzguncuk', 'Acıbadem'] },
-      { id: 'bakirkoy', name: 'Bakırköy', lat: 40.9760, lon: 28.8720, elevation_m: 20, sampleNeighborhoods: ['Ataköy Marina', 'Florya Atatürk Ormanı', 'Yeşilköy Sahil', 'Zuhuratbaba'] },
-      { id: 'basaksehir', name: 'Başakşehir', lat: 41.0950, lon: 28.8050, elevation_m: 140, sampleNeighborhoods: ['Bahçeşehir 1. Kısım Gölet', 'Bahçeşehir 2. Kısım', 'Kayaşehir Şehir Hastanesi', 'İkitelli OSB'] }
+      { id: 'seyhan', name: 'Seyhan', lat: 37.0050, lon: 35.3250, elevation_m: 28, sampleNeighborhoods: ['Ziyapaşa Bulvarı', 'Gazipaşa', 'Cemalpaşa', 'Barajyolu'] },
+      { id: 'cukurova', name: 'Çukurova', lat: 37.0450, lon: 35.3120, elevation_m: 65, sampleNeighborhoods: ['Güzelyalı / Baraj Kıyısı', 'Beyazevler', 'Turgut Özal Bulvarı'] }
+    ]
+  },
+  {
+    id: 'agri',
+    name: '04 Ağrı',
+    districts: [
+      { id: 'dogubayazit', name: 'Doğubayazıt', lat: 39.5210, lon: 44.1290, elevation_m: 1950, sampleNeighborhoods: ['İshak Paşa Sarayı', 'Gürbulak Sınır Kapısı', 'Büyük Ağrı Caddesi'] },
+      { id: 'merkez', name: 'Merkez', lat: 39.7191, lon: 43.0503, elevation_m: 1640, sampleNeighborhoods: ['Cumhuriyet Caddesi', 'Abide Meydanı', 'Fırat'] }
     ]
   },
   {
@@ -290,17 +293,6 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
       { id: 'golbasi', name: 'Gölbaşı', lat: 39.7900, lon: 32.8050, elevation_m: 975, sampleNeighborhoods: ['Mogan Gölü Sahili', 'Eymir Yolu', 'İncek Taşpınar', 'Karşıyaka'] },
       { id: 'etimesgut', name: 'Etimesgut', lat: 39.9500, lon: 32.6750, elevation_m: 820, sampleNeighborhoods: ['Eryaman (Göksu Parkı)', 'Bağlıca Bulvarı', 'Elvankent', 'Alsancak'] },
       { id: 'kecioren', name: 'Keçiören', lat: 39.9950, lon: 32.8650, elevation_m: 910, sampleNeighborhoods: ['Etlik (Şehir Hastanesi)', 'Kalaba', 'Dutluk', 'Aktepe', 'İncirli'] }
-    ]
-  },
-  {
-    id: 'izmir',
-    name: '35 İzmir',
-    districts: [
-      { id: 'cesme', name: 'Çeşme', lat: 38.3240, lon: 26.3040, elevation_m: 15, sampleNeighborhoods: ['Alaçatı (Port / Çarşı)', 'Çeşme Marina & Kale', 'Ilıca Plajı', 'Dalyan Marina', 'Çiftlikköy'] },
-      { id: 'konak', name: 'Konak', lat: 38.4190, lon: 27.1280, elevation_m: 5, sampleNeighborhoods: ['Alsancak Kordon', 'Göztepe Sahili', 'Güzelyalı', 'Pasaport İskelesi', 'Konak Meydanı'] },
-      { id: 'karsiyaka', name: 'Karşıyaka', lat: 38.4550, lon: 27.0980, elevation_m: 5, sampleNeighborhoods: ['Bostanlı Sahili & İskele', 'Mavişehir Hilltown Çevresi', 'Aksoy', 'Alaybey'] },
-      { id: 'urla', name: 'Urla', lat: 38.3250, lon: 26.7650, elevation_m: 25, sampleNeighborhoods: ['Urla İskele / Bağ Yolu', 'Kekliktepe', 'Zeytinalanı', 'Kuşçular'] },
-      { id: 'bornova', name: 'Bornova', lat: 38.4620, lon: 27.2180, elevation_m: 45, sampleNeighborhoods: ['Küçükpark (Ege Üniversitesi)', 'Evka-3', 'Forum Bornova Çevresi', 'Özkanlar'] }
     ]
   },
   {
@@ -316,123 +308,11 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
     ]
   },
   {
-    id: 'mugla',
-    name: '48 Muğla',
-    districts: [
-      { id: 'bodrum', name: 'Bodrum', lat: 37.0350, lon: 27.4320, elevation_m: 10, sampleNeighborhoods: ['Yalıkavak Marina', 'Göltürkbükü Sahili', 'Bodrum Merkez / Kale', 'Bitez Sahil', 'Turgutreis Marina', 'Gümüşlük Koyu'] },
-      { id: 'fethiye', name: 'Fethiye', lat: 36.6500, lon: 29.1160, elevation_m: 15, sampleNeighborhoods: ['Ölüdeniz / Belcekız Plajı', 'Göcek (D-Marin)', 'Çalış Plajı Kordon', 'Hisarönü / Babadağ Teleferik', 'Kayaköy'] },
-      { id: 'marmaris', name: 'Marmaris', lat: 36.8520, lon: 28.2750, elevation_m: 8, sampleNeighborhoods: ['Netsel Marina', 'İçmeler Sahili', 'Armutalan', 'Selimiye Koyu', 'Bozburun', 'Turunç'] },
-      { id: 'datca', name: 'Datça', lat: 36.7250, lon: 27.6850, elevation_m: 18, sampleNeighborhoods: ['İskele / Kumluk Plajı', 'Eski Datça (Can Yücel Sokağı)', 'Knidos Feneri (En Batı Uç)', 'Palamutbükü Koyu'] }
-    ]
-  },
-  {
-    id: 'bursa',
-    name: '16 Bursa',
-    districts: [
-      { id: 'nilufer', name: 'Nilüfer', lat: 40.2220, lon: 28.9210, elevation_m: 110, sampleNeighborhoods: ['Özlüce (Ahmet Taner Kışlalı)', 'Balat / YHT İstasyonu', 'Görükle Kampüs', 'FSM Bulvarı', 'İhsaniye', 'Odunluk / Sur Yapı'] },
-      { id: 'osmangazi', name: 'Osmangazi', lat: 40.1880, lon: 29.0610, elevation_m: 155, sampleNeighborhoods: ['Heykel / Kent Meydanı', 'Çekirge Termal', 'Altıparmak', 'Ulucami Çevresi', 'Demirtaş'] },
-      { id: 'mudanya', name: 'Mudanya', lat: 40.3650, lon: 28.8950, elevation_m: 8, sampleNeighborhoods: ['Güzelyalı (İDO/BUDO İskelesi)', 'Mudanya Kordon', 'Tirilye Sahil', 'Burgaz'] },
-      { id: 'gemlik', name: 'Gemlik (Togg Fabrikası)', lat: 40.4350, lon: 29.1550, elevation_m: 15, sampleNeighborhoods: ['Togg Teknoloji Kampüsü', 'Gemlik Kordon', 'Kumla Sahili', 'Manastır'] }
-    ]
-  },
-  {
-    id: 'kocaeli',
-    name: '41 Kocaeli',
-    districts: [
-      { id: 'gebze', name: 'Gebze (Bilişim Vadisi)', lat: 40.8050, lon: 29.4350, elevation_m: 110, sampleNeighborhoods: ['Bilişim Vadisi (Togg Genel Merkez)', 'GOSB Sanayi', 'Eskihisar Kalesi / Feribot', 'Hacıhalil', 'Mutlukent'] },
-      { id: 'izmit', name: 'İzmit', lat: 40.7650, lon: 29.9400, elevation_m: 20, sampleNeighborhoods: ['Yahya Kaptan', 'Yürüyüş Yolu Kordon', 'Kocaeli Üniversitesi Umuttepe', 'Alikahya'] },
-      { id: 'kartepe', name: 'Kartepe (Kayak Merkezi)', lat: 40.6700, lon: 30.0150, elevation_m: 1350, sampleNeighborhoods: ['Kartepe Zirve Oteller Bölgesi', 'Maşukiye Şelaleleri', 'Derbent'] }
-    ]
-  },
-  {
-    id: 'sakarya',
-    name: '54 Sakarya',
-    districts: [
-      { id: 'sapanca', name: 'Sapanca (Göl Kıyısı)', lat: 40.6920, lon: 30.2580, elevation_m: 45, sampleNeighborhoods: ['Kırkpınar Sahili', 'Sapanca Göl Yürüyüş Yolu', 'Kurtköy Bungalovlar Bölgesi', 'Rüstempaşa'] },
-      { id: 'serdivan', name: 'Serdivan', lat: 40.7650, lon: 30.3650, elevation_m: 65, sampleNeighborhoods: ['Mavi Durak (Bağlar)', 'Sakarya Üniversitesi Kampüsü', 'Serdivan AVM Çevresi'] },
-      { id: 'adapazari', name: 'Adapazarı', lat: 40.7750, lon: 30.4000, elevation_m: 32, sampleNeighborhoods: ['Çark Caddesi', 'Kent Park', 'Mithatpaşa', 'Korucuk'] }
-    ]
-  },
-  {
-    id: 'bolu',
-    name: '14 Bolu',
-    districts: [
-      { id: 'merkez', name: 'Merkez (Bolu Dağı Otoyol)', lat: 40.7390, lon: 31.5050, elevation_m: 726, sampleNeighborhoods: ['Bolu Dağı Geçişi / Tünel', 'İzzet Baysal Caddesi', 'Karacasu Kaplıcaları', 'Gölcük Tabiat Parkı Yolu'] },
-      { id: 'abant', name: 'Mudurnu / Abant', lat: 40.6050, lon: 31.2800, elevation_m: 1325, sampleNeighborhoods: ['Abant Gölü Sahili', 'Tabiat Parkı Oteller Bölgesi', 'Mudurnu Tarihi Evler'] },
-      { id: 'gerede', name: 'Gerede', lat: 40.8000, lon: 32.2000, elevation_m: 1300, sampleNeighborhoods: ['Esentepe Kayak Merkezi', 'Bahçelievler', 'Kitirler'] }
-    ]
-  },
-  {
-    id: 'bilecik',
-    name: '11 Bilecik',
-    districts: [
-      { id: 'bozuyuk', name: 'Bozüyük (YHT Garı)', lat: 39.9050, lon: 30.0450, elevation_m: 740, sampleNeighborhoods: ['YHT Garı Çevresi', 'İsmet İnönü Caddesi', 'Kasımpaşa', 'Çarşı'] },
-      { id: 'merkez', name: 'Merkez', lat: 40.1426, lon: 29.9793, elevation_m: 500, sampleNeighborhoods: ['Şeyh Edebali Türbesi', 'Valilik Meydanı', 'İstasyon', 'Ertuğrulgazi'] },
-      { id: 'sogut', name: 'Söğüt', lat: 40.0150, lon: 30.1850, elevation_m: 665, sampleNeighborhoods: ['Ertuğrul Gazi Türbesi', 'Cumhuriyet', 'Türkoba'] }
-    ]
-  },
-  {
-    id: 'eskisehir',
-    name: '26 Eskişehir',
-    districts: [
-      { id: 'tepebasi', name: 'Tepebaşı', lat: 39.7850, lon: 30.5050, elevation_m: 790, sampleNeighborhoods: ['Anadolu Üniversitesi Kampüsü', 'Espark / Üniversite Cad.', 'Batıkent', 'Çamlıca'] },
-      { id: 'odunpazari', name: 'Odunpazarı', lat: 39.7600, lon: 30.5250, elevation_m: 810, sampleNeighborhoods: ['Tarihi Odunpazarı Evleri', 'Porsuk Çayı Adalar', 'Sazova Bilim Parkı', 'Vişnelik'] }
-    ]
-  },
-  {
-    id: 'erzurum',
-    name: '25 Erzurum',
-    districts: [
-      { id: 'palandoken', name: 'Palandöken (Kayak Merkezi)', lat: 39.8520, lon: 41.2850, elevation_m: 2150, sampleNeighborhoods: ['Palandöken Oteller Bölgesi', 'Yenişehir / Kayak Yolu', 'Yıldızkent'] },
-      { id: 'yakutiye', name: 'Yakutiye (Tarihi Merkez)', lat: 39.9055, lon: 41.2658, elevation_m: 1910, sampleNeighborhoods: ['Çifte Minareli Medrese', 'Cumhuriyet Caddesi', 'Lalapaşa'] }
-    ]
-  },
-  {
-    id: 'trabzon',
-    name: '61 Trabzon',
-    districts: [
-      { id: 'ortahisar', name: 'Ortahisar (Meydan / Boztepe)', lat: 41.0027, lon: 39.7168, elevation_m: 35, sampleNeighborhoods: ['Meydan Parkı / Maraş Caddesi', 'KTÜ Kanuni Kampüsü', 'Boztepe Seyir Terası'] },
-      { id: 'macka', name: 'Maçka (Sümela Manastırı)', lat: 40.6900, lon: 39.6550, elevation_m: 1150, sampleNeighborhoods: ['Sümela Manastırı Girişi (Altındere)', 'Hamsiköy Sütlaç Vadisi'] }
-    ]
-  },
-  {
-    id: 'gaziantep',
-    name: '27 Gaziantep',
-    districts: [
-      { id: 'sehitkamil', name: 'Şehitkamil', lat: 37.0850, lon: 37.3350, elevation_m: 865, sampleNeighborhoods: ['İbrahimli (Batıkent)', 'Gazimuhtarpaşa Bulvarı', 'Merveşehir'] },
-      { id: 'sahinbey', name: 'Şahinbey', lat: 37.0650, lon: 37.3820, elevation_m: 850, sampleNeighborhoods: ['Gaziantep Kalesi / Bakırcılar Çarşısı', 'Karataş', 'Akkent'] }
-    ]
-  },
-  {
-    id: 'adana',
-    name: '01 Adana',
-    districts: [
-      { id: 'seyhan', name: 'Seyhan', lat: 37.0050, lon: 35.3250, elevation_m: 28, sampleNeighborhoods: ['Ziyapaşa Bulvarı', 'Gazipaşa', 'Cemalpaşa', 'Barajyolu'] },
-      { id: 'cukurova', name: 'Çukurova', lat: 37.0450, lon: 35.3120, elevation_m: 65, sampleNeighborhoods: ['Güzelyalı / Baraj Kıyısı', 'Beyazevler', 'Turgut Özal Bulvarı'] }
-    ]
-  },
-  {
     id: 'artvin',
     name: '08 Artvin',
     districts: [
       { id: 'hopa', name: 'Hopa (Sarp Sınır Kapısı)', lat: 41.3920, lon: 41.4310, elevation_m: 10, sampleNeighborhoods: ['Sarp Sınır Kapısı (Gürcistan)', 'Hopa Limanı', 'Kemalpaşa Sahil'] },
       { id: 'merkez', name: 'Merkez', lat: 41.1828, lon: 41.8183, elevation_m: 345, sampleNeighborhoods: ['Çoruh Park', 'Köprübaşı', 'Çarşı'] }
-    ]
-  },
-  {
-    id: 'hakkari',
-    name: '30 Hakkari',
-    districts: [
-      { id: 'yuksekova', name: 'Yüksekova (Havalimanı)', lat: 37.5520, lon: 44.2400, elevation_m: 1870, sampleNeighborhoods: ['Selahaddin Eyyubi Havalimanı', 'İpekyolu Caddesi', 'Esentepe'] },
-      { id: 'semdinli', name: 'Şemdinli (Sıfır Noktası)', lat: 37.2970, lon: 44.5750, elevation_m: 1400, sampleNeighborhoods: ['Merkez Çarşı', 'Moda', 'Yayla'] }
-    ]
-  },
-  {
-    id: 'agri',
-    name: '04 Ağrı',
-    districts: [
-      { id: 'dogubayazit', name: 'Doğubayazıt', lat: 39.5210, lon: 44.1290, elevation_m: 1950, sampleNeighborhoods: ['İshak Paşa Sarayı', 'Gürbulak Sınır Kapısı', 'Büyük Ağrı Caddesi'] },
-      { id: 'merkez', name: 'Merkez', lat: 39.7191, lon: 43.0503, elevation_m: 1640, sampleNeighborhoods: ['Cumhuriyet Caddesi', 'Abide Meydanı', 'Fırat'] }
     ]
   },
   {
@@ -449,6 +329,34 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
     districts: [
       { id: 'ayvalik', name: 'Ayvalık (Cunda)', lat: 39.3197, lon: 26.6964, elevation_m: 5, sampleNeighborhoods: ['Cunda Adası (Alibey)', 'Sarımsaklı Plajı', 'Şeytan Sofrası'] },
       { id: 'edremit', name: 'Edremit (Akçay / Altınoluk)', lat: 39.5850, lon: 26.9250, elevation_m: 25, sampleNeighborhoods: ['Akçay Kordon', 'Altınoluk Sahil', 'Güre Termal'] }
+    ]
+  },
+  {
+    id: 'bilecik',
+    name: '11 Bilecik',
+    districts: [
+      { id: 'bozuyuk', name: 'Bozüyük (YHT Garı)', lat: 39.9050, lon: 30.0450, elevation_m: 740, sampleNeighborhoods: ['YHT Garı Çevresi', 'İsmet İnönü Caddesi', 'Kasımpaşa', 'Çarşı'] },
+      { id: 'merkez', name: 'Merkez', lat: 40.1426, lon: 29.9793, elevation_m: 500, sampleNeighborhoods: ['Şeyh Edebali Türbesi', 'Valilik Meydanı', 'İstasyon', 'Ertuğrulgazi'] },
+      { id: 'sogut', name: 'Söğüt', lat: 40.0150, lon: 30.1850, elevation_m: 665, sampleNeighborhoods: ['Ertuğrul Gazi Türbesi', 'Cumhuriyet', 'Türkoba'] }
+    ]
+  },
+  {
+    id: 'bolu',
+    name: '14 Bolu',
+    districts: [
+      { id: 'merkez', name: 'Merkez (Bolu Dağı Otoyol)', lat: 40.7390, lon: 31.5050, elevation_m: 726, sampleNeighborhoods: ['Bolu Dağı Geçişi / Tünel', 'İzzet Baysal Caddesi', 'Karacasu Kaplıcaları', 'Gölcük Tabiat Parkı Yolu'] },
+      { id: 'abant', name: 'Mudurnu / Abant', lat: 40.6050, lon: 31.2800, elevation_m: 1325, sampleNeighborhoods: ['Abant Gölü Sahili', 'Tabiat Parkı Oteller Bölgesi', 'Mudurnu Tarihi Evler'] },
+      { id: 'gerede', name: 'Gerede', lat: 40.8000, lon: 32.2000, elevation_m: 1300, sampleNeighborhoods: ['Esentepe Kayak Merkezi', 'Bahçelievler', 'Kitirler'] }
+    ]
+  },
+  {
+    id: 'bursa',
+    name: '16 Bursa',
+    districts: [
+      { id: 'nilufer', name: 'Nilüfer', lat: 40.2220, lon: 28.9210, elevation_m: 110, sampleNeighborhoods: ['Özlüce (Ahmet Taner Kışlalı)', 'Balat / YHT İstasyonu', 'Görükle Kampüs', 'FSM Bulvarı', 'İhsaniye', 'Odunluk / Sur Yapı'] },
+      { id: 'osmangazi', name: 'Osmangazi', lat: 40.1880, lon: 29.0610, elevation_m: 155, sampleNeighborhoods: ['Heykel / Kent Meydanı', 'Çekirge Termal', 'Altıparmak', 'Ulucami Çevresi', 'Demirtaş'] },
+      { id: 'mudanya', name: 'Mudanya', lat: 40.3650, lon: 28.8950, elevation_m: 8, sampleNeighborhoods: ['Güzelyalı (İDO/BUDO İskelesi)', 'Mudanya Kordon', 'Tirilye Sahil', 'Burgaz'] },
+      { id: 'gemlik', name: 'Gemlik (Togg Fabrikası)', lat: 40.4350, lon: 29.1550, elevation_m: 15, sampleNeighborhoods: ['Togg Teknoloji Kampüsü', 'Gemlik Kordon', 'Kumla Sahili', 'Manastır'] }
     ]
   },
   {
@@ -483,10 +391,75 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
     ]
   },
   {
+    id: 'erzurum',
+    name: '25 Erzurum',
+    districts: [
+      { id: 'palandoken', name: 'Palandöken (Kayak Merkezi)', lat: 39.8520, lon: 41.2850, elevation_m: 2150, sampleNeighborhoods: ['Palandöken Oteller Bölgesi', 'Yenişehir / Kayak Yolu', 'Yıldızkent'] },
+      { id: 'yakutiye', name: 'Yakutiye (Tarihi Merkez)', lat: 39.9055, lon: 41.2658, elevation_m: 1910, sampleNeighborhoods: ['Çifte Minareli Medrese', 'Cumhuriyet Caddesi', 'Lalapaşa'] }
+    ]
+  },
+  {
+    id: 'eskisehir',
+    name: '26 Eskişehir',
+    districts: [
+      { id: 'tepebasi', name: 'Tepebaşı', lat: 39.7850, lon: 30.5050, elevation_m: 790, sampleNeighborhoods: ['Anadolu Üniversitesi Kampüsü', 'Espark / Üniversite Cad.', 'Batıkent', 'Çamlıca'] },
+      { id: 'odunpazari', name: 'Odunpazarı', lat: 39.7600, lon: 30.5250, elevation_m: 810, sampleNeighborhoods: ['Tarihi Odunpazarı Evleri', 'Porsuk Çayı Adalar', 'Sazova Bilim Parkı', 'Vişnelik'] }
+    ]
+  },
+  {
+    id: 'gaziantep',
+    name: '27 Gaziantep',
+    districts: [
+      { id: 'sehitkamil', name: 'Şehitkamil', lat: 37.0850, lon: 37.3350, elevation_m: 865, sampleNeighborhoods: ['İbrahimli (Batıkent)', 'Gazimuhtarpaşa Bulvarı', 'Merveşehir'] },
+      { id: 'sahinbey', name: 'Şahinbey', lat: 37.0650, lon: 37.3820, elevation_m: 850, sampleNeighborhoods: ['Gaziantep Kalesi / Bakırcılar Çarşısı', 'Karataş', 'Akkent'] }
+    ]
+  },
+  {
+    id: 'hakkari',
+    name: '30 Hakkari',
+    districts: [
+      { id: 'yuksekova', name: 'Yüksekova (Havalimanı)', lat: 37.5520, lon: 44.2400, elevation_m: 1870, sampleNeighborhoods: ['Selahaddin Eyyubi Havalimanı', 'İpekyolu Caddesi', 'Esentepe'] },
+      { id: 'semdinli', name: 'Şemdinli (Sıfır Noktası)', lat: 37.2970, lon: 44.5750, elevation_m: 1400, sampleNeighborhoods: ['Merkez Çarşı', 'Moda', 'Yayla'] }
+    ]
+  },
+  {
+    id: 'istanbul',
+    name: '34 İstanbul',
+    districts: [
+      { id: 'pendik', name: 'Pendik', lat: 40.8752, lon: 29.2325, elevation_m: 55, sampleNeighborhoods: ['Kurtköy (Sabiha Gökçen / Teknopark)', 'Batı Mah. (Marina / Sahil)', 'Yenişehir (Lens / Atlantis)', 'Kaynarca (Marmara EAH)', 'Güzelyalı (YHT)'] },
+      { id: 'kadikoy', name: 'Kadıköy', lat: 40.9850, lon: 29.0270, elevation_m: 25, sampleNeighborhoods: ['Caferağa (Moda Sahil)', 'Caddebostan (Bağdat Caddesi)', 'Fenerbahçe Orduevi Çevresi', 'Fikirtepe', 'Suadiye', 'Bostancı İskele'] },
+      { id: 'sariyer', name: 'Sarıyer', lat: 41.1090, lon: 29.0220, elevation_m: 110, sampleNeighborhoods: ['Maslak (İTÜ / Finans)', 'İstinye Marina / Park', 'Tarabya Sahili', 'Zekeriyaköy Evleri', 'Yeniköy Boğaz'] },
+      { id: 'besiktas', name: 'Beşiktaş', lat: 41.0820, lon: 29.0140, elevation_m: 60, sampleNeighborhoods: ['Levent (Kanyon / Zorlu)', 'Bebek Koyu', 'Etiler Nispetiye', 'Ortaköy Meydanı', 'Gayrettepe'] },
+      { id: 'uskudar', name: 'Üsküdar', lat: 41.0220, lon: 29.0420, elevation_m: 45, sampleNeighborhoods: ['Altunizade (Köprü Çıkışı)', 'Çengelköy Sahil', 'Beylerbeyi Sarayı Çevresi', 'Kuzguncuk', 'Acıbadem'] },
+      { id: 'bakirkoy', name: 'Bakırköy', lat: 40.9760, lon: 28.8720, elevation_m: 20, sampleNeighborhoods: ['Ataköy Marina', 'Florya Atatürk Ormanı', 'Yeşilköy Sahil', 'Zuhuratbaba'] },
+      { id: 'basaksehir', name: 'Başakşehir', lat: 41.0950, lon: 28.8050, elevation_m: 140, sampleNeighborhoods: ['Bahçeşehir 1. Kısım Gölet', 'Bahçeşehir 2. Kısım', 'Kayaşehir Şehir Hastanesi', 'İkitelli OSB'] }
+    ]
+  },
+  {
+    id: 'izmir',
+    name: '35 İzmir',
+    districts: [
+      { id: 'cesme', name: 'Çeşme', lat: 38.3240, lon: 26.3040, elevation_m: 15, sampleNeighborhoods: ['Alaçatı (Port / Çarşı)', 'Çeşme Marina & Kale', 'Ilıca Plajı', 'Dalyan Marina', 'Çiftlikköy'] },
+      { id: 'konak', name: 'Konak', lat: 38.4190, lon: 27.1280, elevation_m: 5, sampleNeighborhoods: ['Alsancak Kordon', 'Göztepe Sahili', 'Güzelyalı', 'Pasaport İskelesi', 'Konak Meydanı'] },
+      { id: 'karsiyaka', name: 'Karşıyaka', lat: 38.4550, lon: 27.0980, elevation_m: 5, sampleNeighborhoods: ['Bostanlı Sahili & İskele', 'Mavişehir Hilltown Çevresi', 'Aksoy', 'Alaybey'] },
+      { id: 'urla', name: 'Urla', lat: 38.3250, lon: 26.7650, elevation_m: 25, sampleNeighborhoods: ['Urla İskele / Bağ Yolu', 'Kekliktepe', 'Zeytinalanı', 'Kuşçular'] },
+      { id: 'bornova', name: 'Bornova', lat: 38.4620, lon: 27.2180, elevation_m: 45, sampleNeighborhoods: ['Küçükpark (Ege Üniversitesi)', 'Evka-3', 'Forum Bornova Çevresi', 'Özkanlar'] }
+    ]
+  },
+  {
     id: 'kayseri',
     name: '38 Kayseri',
     districts: [
       { id: 'melikgazi', name: 'Melikgazi (Erciyes Kayak)', lat: 38.5350, lon: 35.5350, elevation_m: 2200, sampleNeighborhoods: ['Erciyes Kayak Merkezi Tekir Kapı', 'Hacılar Kapı', 'Hisarcık'] }
+    ]
+  },
+  {
+    id: 'kocaeli',
+    name: '41 Kocaeli',
+    districts: [
+      { id: 'gebze', name: 'Gebze (Bilişim Vadisi)', lat: 40.8050, lon: 29.4350, elevation_m: 110, sampleNeighborhoods: ['Bilişim Vadisi (Togg Genel Merkez)', 'GOSB Sanayi', 'Eskihisar Kalesi / Feribot', 'Hacıhalil', 'Mutlukent'] },
+      { id: 'izmit', name: 'İzmit', lat: 40.7650, lon: 29.9400, elevation_m: 20, sampleNeighborhoods: ['Yahya Kaptan', 'Yürüyüş Yolu Kordon', 'Kocaeli Üniversitesi Umuttepe', 'Alikahya'] },
+      { id: 'kartepe', name: 'Kartepe (Kayak Merkezi)', lat: 40.6700, lon: 30.0150, elevation_m: 1350, sampleNeighborhoods: ['Kartepe Zirve Oteller Bölgesi', 'Maşukiye Şelaleleri', 'Derbent'] }
     ]
   },
   {
@@ -506,6 +479,16 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
     ]
   },
   {
+    id: 'mugla',
+    name: '48 Muğla',
+    districts: [
+      { id: 'bodrum', name: 'Bodrum', lat: 37.0350, lon: 27.4320, elevation_m: 10, sampleNeighborhoods: ['Yalıkavak Marina', 'Göltürkbükü Sahili', 'Bodrum Merkez / Kale', 'Bitez Sahil', 'Turgutreis Marina', 'Gümüşlük Koyu'] },
+      { id: 'fethiye', name: 'Fethiye', lat: 36.6500, lon: 29.1160, elevation_m: 15, sampleNeighborhoods: ['Ölüdeniz / Belcekız Plajı', 'Göcek (D-Marin)', 'Çalış Plajı Kordon', 'Hisarönü / Babadağ Teleferik', 'Kayaköy'] },
+      { id: 'marmaris', name: 'Marmaris', lat: 36.8520, lon: 28.2750, elevation_m: 8, sampleNeighborhoods: ['Netsel Marina', 'İçmeler Sahili', 'Armutalan', 'Selimiye Koyu', 'Bozburun', 'Turunç'] },
+      { id: 'datca', name: 'Datça', lat: 36.7250, lon: 27.6850, elevation_m: 18, sampleNeighborhoods: ['İskele / Kumluk Plajı', 'Eski Datça (Can Yücel Sokağı)', 'Knidos Feneri (En Batı Uç)', 'Palamutbükü Koyu'] }
+    ]
+  },
+  {
     id: 'nevsehir',
     name: '50 Nevşehir',
     districts: [
@@ -521,10 +504,27 @@ const TURKEY_PROVINCES: ProvinceItem[] = [
     ]
   },
   {
+    id: 'sakarya',
+    name: '54 Sakarya',
+    districts: [
+      { id: 'sapanca', name: 'Sapanca (Göl Kıyısı)', lat: 40.6920, lon: 30.2580, elevation_m: 45, sampleNeighborhoods: ['Kırkpınar Sahili', 'Sapanca Göl Yürüyüş Yolu', 'Kurtköy Bungalovlar Bölgesi', 'Rüstempaşa'] },
+      { id: 'serdivan', name: 'Serdivan', lat: 40.7650, lon: 30.3650, elevation_m: 65, sampleNeighborhoods: ['Mavi Durak (Bağlar)', 'Sakarya Üniversitesi Kampüsü', 'Serdivan AVM Çevresi'] },
+      { id: 'adapazari', name: 'Adapazarı', lat: 40.7750, lon: 30.4000, elevation_m: 32, sampleNeighborhoods: ['Çark Caddesi', 'Kent Park', 'Mithatpaşa', 'Korucuk'] }
+    ]
+  },
+  {
     id: 'samsun',
     name: '55 Samsun',
     districts: [
       { id: 'atakum', name: 'Atakum (Sahil Kordon)', lat: 41.3250, lon: 36.2750, elevation_m: 5, sampleNeighborhoods: ['Atakum Sahil Şeridi / Yalı', 'Türkiş Meydanı', 'OMÜ Kampüsü'] }
+    ]
+  },
+  {
+    id: 'trabzon',
+    name: '61 Trabzon',
+    districts: [
+      { id: 'ortahisar', name: 'Ortahisar (Meydan / Boztepe)', lat: 41.0027, lon: 39.7168, elevation_m: 35, sampleNeighborhoods: ['Meydan Parkı / Maraş Caddesi', 'KTÜ Kanuni Kampüsü', 'Boztepe Seyir Terası'] },
+      { id: 'macka', name: 'Maçka (Sümela Manastırı)', lat: 40.6900, lon: 39.6550, elevation_m: 1150, sampleNeighborhoods: ['Sümela Manastırı Girişi (Altındere)', 'Hamsiköy Sütlaç Vadisi'] }
     ]
   },
   {
@@ -620,7 +620,7 @@ export default function App() {
 
   // Kalkış Seçim Yardımcıları
   const currentOrigProvince = useMemo(() => 
-    TURKEY_PROVINCES.find(p => p.id === origProvinceId) || TURKEY_PROVINCES[0],
+    TURKEY_PROVINCES.find(p => p.id === origProvinceId) || TURKEY_PROVINCES[18],
     [origProvinceId]
   );
   const currentOrigDistrict = useMemo(() => 
@@ -630,7 +630,7 @@ export default function App() {
 
   // Varış Seçim Yardımcıları
   const currentDestProvince = useMemo(() => 
-    TURKEY_PROVINCES.find(p => p.id === destProvinceId) || TURKEY_PROVINCES[2],
+    TURKEY_PROVINCES.find(p => p.id === destProvinceId) || TURKEY_PROVINCES[19],
     [destProvinceId]
   );
   const currentDestDistrict = useMemo(() => 
@@ -683,6 +683,10 @@ export default function App() {
 
   // --- 1. ROTA VE ŞARJ PLANI ÇALIŞTIRICI ---
   const runRoutePlanner = () => {
+    if (currentOrigDistrict.id === currentDestDistrict.id && currentOrigProvince.id === currentDestProvince.id) {
+      alert('Kalkış ve varış noktası olarak aynı ilçeyi seçtiniz!');
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
       const totalKm = calculateDistanceKm(currentOrigDistrict, currentDestDistrict);
@@ -926,7 +930,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v3.0 Pro</span>
+              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v3.1 Sıralı</span>
             </h1>
             <p className="text-xs text-slate-400">Software-Defined Vehicle Diagnostics & Smart Route Navigation</p>
           </div>
@@ -1012,7 +1016,7 @@ export default function App() {
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
               <div className="space-y-4">
                 <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-                  <MapPin className="w-5 h-5 text-emerald-400" /> Konum ve Sürüş Seçimi
+                  <MapPin className="w-5 h-5 text-emerald-400" /> Sıralı Şehir ve İlçe Seçimi
                 </h2>
 
                 {/* 1. KALKIŞ NOKTASI */}
