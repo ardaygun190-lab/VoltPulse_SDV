@@ -15,7 +15,8 @@ import {
   CreditCard,
   Flame,
   LifeBuoy,
-  ArrowRight
+  ArrowRight,
+  ChevronRight
 } from 'lucide-react';
 
 interface Vehicle {
@@ -262,8 +263,8 @@ const VEHICLES: Vehicle[] = [
   }
 ];
 
-// --- TÜRKİYE 81 İL + UÇ VE TURİSTİK NOKTALAR VERİTABANI ---
-interface LocationPoint {
+// --- TÜRKİYE İL -> İLÇE -> MAHALLE / NOKTA HİYERARŞİK VERİTABANI ---
+interface Neighborhood {
   id: string;
   name: string;
   lat: number;
@@ -271,117 +272,505 @@ interface LocationPoint {
   elevation_m: number;
 }
 
-const TURKEY_LOCATIONS: LocationPoint[] = [
-  // 81 İl
-  { id: 'adana', name: 'Adana', lat: 37.0000, lon: 35.3213, elevation_m: 23 },
-  { id: 'adiyaman', name: 'Adıyaman', lat: 37.7648, lon: 38.2786, elevation_m: 669 },
-  { id: 'afyon', name: 'Afyonkarahisar', lat: 38.7507, lon: 30.5567, elevation_m: 1021 },
-  { id: 'agri', name: 'Ağrı', lat: 39.7191, lon: 43.0503, elevation_m: 1640 },
-  { id: 'aksaray', name: 'Aksaray', lat: 38.3687, lon: 34.0370, elevation_m: 980 },
-  { id: 'amasya', name: 'Amasya', lat: 40.6501, lon: 35.8353, elevation_m: 411 },
-  { id: 'ankara', name: 'Ankara', lat: 39.9334, lon: 32.8597, elevation_m: 938 },
-  { id: 'antalya', name: 'Antalya (Merkez)', lat: 36.8969, lon: 30.7133, elevation_m: 30 },
-  { id: 'ardahan', name: 'Ardahan', lat: 41.1105, lon: 42.7022, elevation_m: 1829 },
-  { id: 'artvin', name: 'Artvin (Merkez)', lat: 41.1828, lon: 41.8183, elevation_m: 345 },
-  { id: 'aydin', name: 'Aydın', lat: 37.8444, lon: 27.8458, elevation_m: 65 },
-  { id: 'balikesir', name: 'Balıkesir', lat: 39.6484, lon: 27.8826, elevation_m: 145 },
-  { id: 'bartin', name: 'Bartın', lat: 41.6344, lon: 32.3375, elevation_m: 25 },
-  { id: 'batman', name: 'Batman', lat: 37.8812, lon: 41.1293, elevation_m: 540 },
-  { id: 'bayburt', name: 'Bayburt', lat: 40.2552, lon: 40.2249, elevation_m: 1550 },
-  { id: 'bilecik', name: 'Bilecik / Bozüyük', lat: 40.1426, lon: 29.9793, elevation_m: 500 },
-  { id: 'bingol', name: 'Bingöl', lat: 38.8854, lon: 40.4983, elevation_m: 1151 },
-  { id: 'bitlis', name: 'Bitlis', lat: 38.4006, lon: 42.1095, elevation_m: 1545 },
-  { id: 'bolu', name: 'Bolu (Dağı Geçişi)', lat: 40.7392, lon: 31.6089, elevation_m: 726 },
-  { id: 'burdur', name: 'Burdur', lat: 37.7203, lon: 30.2908, elevation_m: 950 },
-  { id: 'bursa', name: 'Bursa', lat: 40.1885, lon: 29.0610, elevation_m: 155 },
-  { id: 'canakkale', name: 'Çanakkale (1915 Köprüsü)', lat: 40.1553, lon: 26.4142, elevation_m: 10 },
-  { id: 'cankiri', name: 'Çankırı', lat: 40.6013, lon: 33.6134, elevation_m: 730 },
-  { id: 'corum', name: 'Çorum', lat: 40.5506, lon: 34.9556, elevation_m: 801 },
-  { id: 'denizli', name: 'Denizli / Pamukkale', lat: 37.7765, lon: 29.0864, elevation_m: 354 },
-  { id: 'diyarbakir', name: 'Diyarbakır', lat: 37.9144, lon: 40.2306, elevation_m: 670 },
-  { id: 'duzce', name: 'Düzce', lat: 40.8438, lon: 31.1565, elevation_m: 160 },
-  { id: 'edirne', name: 'Edirne (Kapıkule)', lat: 41.6772, lon: 26.5557, elevation_m: 42 },
-  { id: 'elazig', name: 'Elazığ', lat: 38.6810, lon: 39.2264, elevation_m: 1067 },
-  { id: 'erzincan', name: 'Erzincan', lat: 39.7500, lon: 39.5000, elevation_m: 1185 },
-  { id: 'erzurum', name: 'Erzurum (Palandöken)', lat: 39.9055, lon: 41.2658, elevation_m: 1890 },
-  { id: 'eskisehir', name: 'Eskişehir', lat: 39.7667, lon: 30.5256, elevation_m: 792 },
-  { id: 'gaziantep', name: 'Gaziantep', lat: 37.0662, lon: 37.3833, elevation_m: 850 },
-  { id: 'giresun', name: 'Giresun', lat: 40.9128, lon: 38.3895, elevation_m: 10 },
-  { id: 'gumushane', name: 'Gümüşhane (Zigana)', lat: 40.4600, lon: 39.4700, elevation_m: 1210 },
-  { id: 'hakkari', name: 'Hakkari (Merkez)', lat: 37.5744, lon: 43.7408, elevation_m: 1720 },
-  { id: 'hatay', name: 'Hatay / İskenderun', lat: 36.2023, lon: 36.1606, elevation_m: 100 },
-  { id: 'igdir', name: 'Iğdır', lat: 39.9237, lon: 44.0450, elevation_m: 858 },
-  { id: 'isparta', name: 'Isparta', lat: 37.7648, lon: 30.5566, elevation_m: 1035 },
-  { id: 'istanbul-anadolu', name: 'İstanbul (Pendik / Sabiha Gökçen)', lat: 40.8784, lon: 29.2578, elevation_m: 40 },
-  { id: 'istanbul-avrupa', name: 'İstanbul (Maslak / Havalimanı)', lat: 41.1105, lon: 29.0200, elevation_m: 120 },
-  { id: 'izmir', name: 'İzmir (Konak / Alsancak)', lat: 38.4192, lon: 27.1287, elevation_m: 5 },
-  { id: 'kahramanmaras', name: 'Kahramanmaraş', lat: 37.5858, lon: 36.9371, elevation_m: 568 },
-  { id: 'karabuk', name: 'Karabük / Safranbolu', lat: 41.2061, lon: 32.6204, elevation_m: 270 },
-  { id: 'karaman', name: 'Karaman', lat: 37.1759, lon: 33.2287, elevation_m: 1033 },
-  { id: 'kars', name: 'Kars (Sarıkamış)', lat: 40.6013, lon: 43.0975, elevation_m: 1768 },
-  { id: 'kastamonu', name: 'Kastamonu (Ilgaz)', lat: 41.3887, lon: 33.7827, elevation_m: 774 },
-  { id: 'kayseri', name: 'Kayseri (Erciyes)', lat: 38.7312, lon: 35.4787, elevation_m: 1050 },
-  { id: 'kilis', name: 'Kilis', lat: 36.7184, lon: 37.1212, elevation_m: 660 },
-  { id: 'kirikkale', name: 'Kırıkkale', lat: 39.8468, lon: 33.5153, elevation_m: 713 },
-  { id: 'kirklareli', name: 'Kırklareli', lat: 41.7333, lon: 27.2167, elevation_m: 203 },
-  { id: 'kirsehir', name: 'Kırşehir', lat: 39.1425, lon: 34.1709, elevation_m: 985 },
-  { id: 'kocaeli', name: 'Kocaeli (Gebze / İzmit)', lat: 40.7654, lon: 29.9408, elevation_m: 15 },
-  { id: 'konya', name: 'Konya', lat: 37.8667, lon: 32.4833, elevation_m: 1024 },
-  { id: 'kutahya', name: 'Kütahya', lat: 39.4167, lon: 29.9833, elevation_m: 969 },
-  { id: 'malatya', name: 'Malatya', lat: 38.3552, lon: 38.3095, elevation_m: 964 },
-  { id: 'manisa', name: 'Manisa', lat: 38.6191, lon: 27.4289, elevation_m: 71 },
-  { id: 'mardin', name: 'Mardin (Eski Mardin)', lat: 37.3212, lon: 40.7245, elevation_m: 1085 },
-  { id: 'mersin', name: 'Mersin (Liman)', lat: 36.8000, lon: 34.6333, elevation_m: 10 },
-  { id: 'mugla', name: 'Muğla (Merkez)', lat: 37.2153, lon: 28.3636, elevation_m: 660 },
-  { id: 'mus', name: 'Muş', lat: 38.7432, lon: 41.5064, elevation_m: 1334 },
-  { id: 'nevsehir', name: 'Nevşehir (Kapadokya / Ürgüp)', lat: 38.6244, lon: 34.7144, elevation_m: 1224 },
-  { id: 'nigde', name: 'Niğde', lat: 37.9667, lon: 34.6833, elevation_m: 1229 },
-  { id: 'ordu', name: 'Ordu', lat: 40.9839, lon: 37.8764, elevation_m: 5 },
-  { id: 'osmaniye', name: 'Osmaniye', lat: 37.0742, lon: 36.2478, elevation_m: 125 },
-  { id: 'rize', name: 'Rize (Ayder Yaylası Yolu)', lat: 41.0201, lon: 40.5234, elevation_m: 6 },
-  { id: 'sakarya', name: 'Sakarya (Adapazarı)', lat: 40.7569, lon: 30.3783, elevation_m: 31 },
-  { id: 'samsun', name: 'Samsun', lat: 41.2928, lon: 36.3313, elevation_m: 20 },
-  { id: 'sanliurfa', name: 'Şanlıurfa (Göbeklitepe)', lat: 37.1591, lon: 38.7969, elevation_m: 518 },
-  { id: 'siirt', name: 'Siirt', lat: 37.9333, lon: 41.9500, elevation_m: 895 },
-  { id: 'sinop', name: 'Sinop (İnceburun - En Kuzey)', lat: 42.0231, lon: 35.1531, elevation_m: 25 },
-  { id: 'sirnak', name: 'Şırnak (Merkez)', lat: 37.5164, lon: 42.4594, elevation_m: 1350 },
-  { id: 'sivas', name: 'Sivas', lat: 39.7477, lon: 37.0179, elevation_m: 1278 },
-  { id: 'tekirdag', name: 'Tekirdağ', lat: 40.9833, lon: 27.5167, elevation_m: 37 },
-  { id: 'tokat', name: 'Tokat', lat: 40.3167, lon: 36.5500, elevation_m: 623 },
-  { id: 'trabzon', name: 'Trabzon (Sümela Yolu)', lat: 41.0027, lon: 39.7168, elevation_m: 35 },
-  { id: 'tunceli', name: 'Tunceli (Munzur Vadisi)', lat: 39.1079, lon: 39.5401, elevation_m: 915 },
-  { id: 'usak', name: 'Uşak', lat: 38.6823, lon: 29.4082, elevation_m: 907 },
-  { id: 'van', name: 'Van (Göl Kıyısı)', lat: 38.4891, lon: 43.4089, elevation_m: 1727 },
-  { id: 'yalova', name: 'Yalova (Osmangazi Köprüsü)', lat: 40.6500, lon: 29.2667, elevation_m: 10 },
-  { id: 'yozgat', name: 'Yozgat', lat: 39.8181, lon: 34.8147, elevation_m: 1300 },
-  { id: 'zonguldak', name: 'Zonguldak', lat: 41.4564, lon: 31.7987, elevation_m: 50 },
+interface District {
+  id: string;
+  name: string;
+  neighborhoods: Neighborhood[];
+}
 
-  // Stratejik, Turistik ve Uç Noktalar
-  { id: 'cesme', name: 'İzmir / Çeşme & Alaçatı', lat: 38.3236, lon: 26.3042, elevation_m: 15 },
-  { id: 'bodrum', name: 'Muğla / Bodrum (Yalıkavak)', lat: 37.0344, lon: 27.4305, elevation_m: 10 },
-  { id: 'fethiye', name: 'Muğla / Fethiye & Ölüdeniz', lat: 36.6500, lon: 29.1167, elevation_m: 20 },
-  { id: 'marmaris', name: 'Muğla / Marmaris', lat: 36.8550, lon: 28.2742, elevation_m: 5 },
-  { id: 'datca', name: 'Muğla / Datça (Knidos Burnu)', lat: 36.7256, lon: 27.6853, elevation_m: 20 },
-  { id: 'kas', name: 'Antalya / Kaş & Kalkan', lat: 36.2000, lon: 29.6375, elevation_m: 15 },
-  { id: 'alanya', name: 'Antalya / Alanya', lat: 36.5438, lon: 31.9998, elevation_m: 10 },
-  { id: 'anamur', name: 'Mersin / Anamur (En Güney Uç)', lat: 36.0753, lon: 32.8333, elevation_m: 10 },
-  { id: 'ayvalik', name: 'Balıkesir / Ayvalık & Cunda', lat: 39.3197, lon: 26.6964, elevation_m: 5 },
-  { id: 'hopa', name: 'Artvin / Hopa (Sarp Sınır Kapısı)', lat: 41.3917, lon: 41.4311, elevation_m: 10 },
-  { id: 'dogubayazit', name: 'Ağrı / Doğubayazıt (İshak Paşa)', lat: 39.5458, lon: 44.0850, elevation_m: 1625 },
-  { id: 'cizre', name: 'Şırnak / Cizre (İpek Yolu)', lat: 37.3272, lon: 42.1869, elevation_m: 377 },
-  { id: 'yuksekova', name: 'Hakkari / Yüksekova', lat: 37.5736, lon: 44.2864, elevation_m: 1870 },
-  { id: 'semdinli', name: 'Hakkari / Şemdinli (Sıfır Noktası)', lat: 37.2978, lon: 44.5750, elevation_m: 1400 },
-  { id: 'igneada', name: 'Kırklareli / İğneada Longoz', lat: 41.8767, lon: 27.9856, elevation_m: 8 }
+interface Province {
+  id: string;
+  name: string;
+  districts: District[];
+}
+
+const TURKEY_HIERARCHY: Province[] = [
+  {
+    id: 'istanbul',
+    name: 'İstanbul',
+    districts: [
+      {
+        id: 'pendik',
+        name: 'Pendik',
+        neighborhoods: [
+          { id: 'pendik-bati', name: 'Batı Mahallesi (Sahil / Marina)', lat: 40.8752, lon: 29.2325, elevation_m: 10 },
+          { id: 'pendik-kurtkoy', name: 'Kurtköy (Sabiha Gökçen / Teknopark)', lat: 40.9125, lon: 29.3080, elevation_m: 110 },
+          { id: 'pendik-yenisehir', name: 'Yenişehir Mahallesi (Lens / Atlantis)', lat: 40.9230, lon: 29.3010, elevation_m: 135 },
+          { id: 'pendik-kaynarca', name: 'Kaynarca (E-5 / Marmara EAH)', lat: 40.8710, lon: 29.2590, elevation_m: 35 }
+        ]
+      },
+      {
+        id: 'kadikoy',
+        name: 'Kadıköy',
+        neighborhoods: [
+          { id: 'kadikoy-moda', name: 'Caferağa (Moda Sahil)', lat: 40.9850, lon: 29.0270, elevation_m: 25 },
+          { id: 'kadikoy-caddebostan', name: 'Caddebostan (Bağdat Caddesi)', lat: 40.9660, lon: 29.0590, elevation_m: 15 },
+          { id: 'kadikoy-fikirtepe', name: 'Fikirtepe (Metrobüs / Avrasya Girişi)', lat: 40.9980, lon: 29.0480, elevation_m: 45 }
+        ]
+      },
+      {
+        id: 'sariyer',
+        name: 'Sarıyer',
+        neighborhoods: [
+          { id: 'sariyer-maslak', name: 'Maslak (İTÜ Ayazağa / Finans)', lat: 41.1090, lon: 29.0220, elevation_m: 130 },
+          { id: 'sariyer-istinya', name: 'İstinye (Koy / Marina)', lat: 41.1120, lon: 29.0550, elevation_m: 15 },
+          { id: 'sariyer-merkez', name: 'Sarıyer Merkez (Sahil Yolu)', lat: 41.1680, lon: 29.0550, elevation_m: 10 }
+        ]
+      },
+      {
+        id: 'besiktas',
+        name: 'Beşiktaş',
+        neighborhoods: [
+          { id: 'besiktas-levent', name: 'Levent (Büyükdere Caddesi)', lat: 41.0820, lon: 29.0140, elevation_m: 115 },
+          { id: 'besiktas-bebek', name: 'Bebek (Boğaz Sahili)', lat: 41.0770, lon: 29.0430, elevation_m: 8 }
+        ]
+      },
+      {
+        id: 'uskudar',
+        name: 'Üsküdar',
+        neighborhoods: [
+          { id: 'uskudar-altunizade', name: 'Altunizade (15 Temmuz Şehitler Girişi)', lat: 41.0220, lon: 29.0420, elevation_m: 75 },
+          { id: 'uskudar-cengelkoy', name: 'Çengelköy Sahil', lat: 41.0500, lon: 29.0520, elevation_m: 10 }
+        ]
+      },
+      {
+        id: 'bakirkoy',
+        name: 'Bakırköy',
+        neighborhoods: [
+          { id: 'bakirkoy-atakoy', name: 'Ataköy (Marina / Sahil)', lat: 40.9760, lon: 28.8720, elevation_m: 12 },
+          { id: 'bakirkoy-florya', name: 'Florya (Atatürk Ormanı)', lat: 40.9700, lon: 28.7900, elevation_m: 25 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ankara',
+    name: 'Ankara',
+    districts: [
+      {
+        id: 'cankaya',
+        name: 'Çankaya',
+        neighborhoods: [
+          { id: 'cankaya-kizilay', name: 'Kızılay (Merkez / Bakanlıklar)', lat: 39.9208, lon: 32.8541, elevation_m: 870 },
+          { id: 'cankaya-cayyolu', name: 'Çayyolu / Ümitköy (Eskişehir Yolu)', lat: 39.8780, lon: 32.7050, elevation_m: 980 },
+          { id: 'cankaya-bilkent', name: 'Bilkent / ODTÜ Teknokent', lat: 39.8870, lon: 32.7530, elevation_m: 950 },
+          { id: 'cankaya-incek', name: 'İncek (Bulvar)', lat: 39.8250, lon: 32.7230, elevation_m: 1045 }
+        ]
+      },
+      {
+        id: 'yenimahalle',
+        name: 'Yenimahalle',
+        neighborhoods: [
+          { id: 'yenimahalle-batikent', name: 'Batıkent (Metro / Konutlar)', lat: 39.9650, lon: 32.7480, elevation_m: 855 },
+          { id: 'yenimahalle-ostim', name: 'OSTİM / İvedik OSB (İstanbul Yolu)', lat: 39.9720, lon: 32.7380, elevation_m: 865 }
+        ]
+      },
+      {
+        id: 'golbasi',
+        name: 'Gölbaşı',
+        neighborhoods: [
+          { id: 'golbasi-merkez', name: 'Mogan Gölü Kıyısı (Konya Yolu)', lat: 39.7900, lon: 32.8050, elevation_m: 975 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'izmir',
+    name: 'İzmir',
+    districts: [
+      {
+        id: 'cesme',
+        name: 'Çeşme',
+        neighborhoods: [
+          { id: 'cesme-alacati', name: 'Alaçatı (Port / Çarşı)', lat: 38.2830, lon: 26.3750, elevation_m: 16 },
+          { id: 'cesme-marina', name: 'Çeşme Marina / Kale Çevresi', lat: 38.3240, lon: 26.3040, elevation_m: 8 },
+          { id: 'cesme-ilica', name: 'Ilıca Plajı / Termal Bölge', lat: 38.3120, lon: 26.3680, elevation_m: 5 }
+        ]
+      },
+      {
+        id: 'konak',
+        name: 'Konak',
+        neighborhoods: [
+          { id: 'konak-alsancak', name: 'Alsancak (Kordon / Liman)', lat: 38.4380, lon: 27.1420, elevation_m: 4 },
+          { id: 'konak-merkez', name: 'Konak Meydanı (Saat Kulesi)', lat: 38.4190, lon: 27.1280, elevation_m: 5 }
+        ]
+      },
+      {
+        id: 'karsiyaka',
+        name: 'Karşıyaka',
+        neighborhoods: [
+          { id: 'karsiyaka-bostanli', name: 'Bostanlı (İskele / Sahil)', lat: 38.4550, lon: 27.0980, elevation_m: 4 },
+          { id: 'karsiyaka-mavisehir', name: 'Mavişehir (AVM / Otoyol Çıkışı)', lat: 38.4680, lon: 27.0850, elevation_m: 3 }
+        ]
+      },
+      {
+        id: 'urla',
+        name: 'Urla',
+        neighborhoods: [
+          { id: 'urla-iskele', name: 'Urla İskele / Çarşı', lat: 38.3620, lon: 26.7720, elevation_m: 8 }
+        ]
+      },
+      {
+        id: 'bornova',
+        name: 'Bornova',
+        neighborhoods: [
+          { id: 'bornova-merkez', name: 'Bornova Küçükpark (Ege Üniv. Çevresi)', lat: 38.4620, lon: 27.2180, elevation_m: 45 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'bursa',
+    name: 'Bursa',
+    districts: [
+      {
+        id: 'nilufer',
+        name: 'Nilüfer',
+        neighborhoods: [
+          { id: 'nilufer-ozluce', name: 'Özlüce (Ahmet Taner Kışlalı Bulvarı)', lat: 40.2220, lon: 28.9210, elevation_m: 120 },
+          { id: 'nilufer-balat', name: 'Balat (Hızlı Tren / Otoyol Girişi)', lat: 40.2580, lon: 28.9480, elevation_m: 95 },
+          { id: 'nilufer-gorukle', name: 'Görükle (Uludağ Üniv. Kampüsü)', lat: 40.2280, lon: 28.8450, elevation_m: 145 }
+        ]
+      },
+      {
+        id: 'osmangazi',
+        name: 'Osmangazi',
+        neighborhoods: [
+          { id: 'osmangazi-heykeli', name: 'Heykel / Kent Meydanı', lat: 40.1880, lon: 29.0610, elevation_m: 155 }
+        ]
+      },
+      {
+        id: 'mudanya',
+        name: 'Mudanya',
+        neighborhoods: [
+          { id: 'mudanya-guzelyali', name: 'Güzelyalı (İDO / BUDO Feribot İskelesi)', lat: 40.3650, lon: 28.8950, elevation_m: 8 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'antalya',
+    name: 'Antalya',
+    districts: [
+      {
+        id: 'muratpasa',
+        name: 'Muratpaşa',
+        neighborhoods: [
+          { id: 'muratpasa-lara', name: 'Lara (Falezler / Çağlayan)', lat: 36.8520, lon: 30.7780, elevation_m: 38 },
+          { id: 'muratpasa-kaleici', name: 'Kaleiçi / Yat Limanı', lat: 36.8850, lon: 30.7040, elevation_m: 15 }
+        ]
+      },
+      {
+        id: 'konyaalti',
+        name: 'Konyaaltı',
+        neighborhoods: [
+          { id: 'konyaalti-sahil', name: 'Konyaaltı Sahil Caddesi', lat: 36.8780, lon: 30.6450, elevation_m: 10 }
+        ]
+      },
+      {
+        id: 'kas',
+        name: 'Kaş',
+        neighborhoods: [
+          { id: 'kas-kalkan', name: 'Kalkan (Koy / Marina)', lat: 36.2620, lon: 29.4150, elevation_m: 25 },
+          { id: 'kas-merkez', name: 'Kaş Merkez (Yat Limanı / Çarşı)', lat: 36.2000, lon: 29.6380, elevation_m: 12 }
+        ]
+      },
+      {
+        id: 'alanya',
+        name: 'Alanya',
+        neighborhoods: [
+          { id: 'alanya-merkez', name: 'Alanya Merkez (Kleopatra Plajı)', lat: 36.5450, lon: 31.9980, elevation_m: 10 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'mugla',
+    name: 'Muğla',
+    districts: [
+      {
+        id: 'bodrum',
+        name: 'Bodrum',
+        neighborhoods: [
+          { id: 'bodrum-yalikavak', name: 'Yalıkavak (Marina / Çarşı)', lat: 37.1050, lon: 27.2950, elevation_m: 12 },
+          { id: 'bodrum-merkez', name: 'Bodrum Merkez (Kale / Barlar Sokağı)', lat: 37.0350, lon: 27.4320, elevation_m: 8 },
+          { id: 'bodrum-turkbuku', name: 'Göltürkbükü Sahil', lat: 37.1280, lon: 27.3820, elevation_m: 6 }
+        ]
+      },
+      {
+        id: 'fethiye',
+        name: 'Fethiye',
+        neighborhoods: [
+          { id: 'fethiye-oludeniz', name: 'Ölüdeniz (Belcekız Plajı)', lat: 36.5490, lon: 29.1240, elevation_m: 10 },
+          { id: 'fethiye-gocek', name: 'Göcek (D-Marin / Yat Limanı)', lat: 36.7550, lon: 28.9420, elevation_m: 5 }
+        ]
+      },
+      {
+        id: 'marmaris',
+        name: 'Marmaris',
+        neighborhoods: [
+          { id: 'marmaris-merkez', name: 'Marmaris Netsel Marina / Kordon', lat: 36.8520, lon: 28.2750, elevation_m: 5 }
+        ]
+      },
+      {
+        id: 'datca',
+        name: 'Datça',
+        neighborhoods: [
+          { id: 'datca-merkez', name: 'Datça İskele / Kumluk Plajı', lat: 36.7250, lon: 27.6850, elevation_m: 15 },
+          { id: 'datca-knidos', name: 'Knidos Feneri (En Batı Uç)', lat: 36.6850, lon: 27.3750, elevation_m: 20 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'kocaeli',
+    name: 'Kocaeli',
+    districts: [
+      {
+        id: 'gebze',
+        name: 'Gebze',
+        neighborhoods: [
+          { id: 'gebze-muallimkoy', name: 'Bilişim Vadisi (Togg Genel Merkezi)', lat: 40.7950, lon: 29.5120, elevation_m: 90 },
+          { id: 'gebze-osb', name: 'GOSB (Organize Sanayi Bölgesi)', lat: 40.8350, lon: 29.4350, elevation_m: 160 }
+        ]
+      },
+      {
+        id: 'izmit',
+        name: 'İzmit',
+        neighborhoods: [
+          { id: 'izmit-merkez', name: 'İzmit Merkez (Yürüyüş Yolu / Sahil)', lat: 40.7650, lon: 29.9400, elevation_m: 15 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sakarya',
+    name: 'Sakarya',
+    districts: [
+      {
+        id: 'adapazari',
+        name: 'Adapazarı',
+        neighborhoods: [
+          { id: 'adapazari-merkez', name: 'Çark Caddesi / Kent Park', lat: 40.7750, lon: 30.4000, elevation_m: 32 }
+        ]
+      },
+      {
+        id: 'sapanca',
+        name: 'Sapanca',
+        neighborhoods: [
+          { id: 'sapanca-gol', name: 'Sapanca Göl Sahili (Kırkpınar)', lat: 40.6920, lon: 30.2580, elevation_m: 45 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'bolu',
+    name: 'Bolu',
+    districts: [
+      {
+        id: 'bolu-merkez',
+        name: 'Merkez',
+        neighborhoods: [
+          { id: 'bolu-dagi', name: 'Bolu Dağı Geçişi (O-4 Tüneli / Tesisler)', lat: 40.7390, lon: 31.5050, elevation_m: 890 },
+          { id: 'bolu-sehir', name: 'Bolu Kent Meydanı / Valilik', lat: 40.7350, lon: 31.6050, elevation_m: 726 }
+        ]
+      },
+      {
+        id: 'abant',
+        name: 'Mudurnu / Abant',
+        neighborhoods: [
+          { id: 'abant-gol', name: 'Abant Tabiat Parkı Kıyısı', lat: 40.6050, lon: 31.2800, elevation_m: 1325 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'eskisehir',
+    name: 'Eskişehir',
+    districts: [
+      {
+        id: 'tepebasi',
+        name: 'Tepebaşı',
+        neighborhoods: [
+          { id: 'tepebasi-anadolu', name: 'Anadolu Üniversitesi / Espark Çevresi', lat: 39.7850, lon: 30.5050, elevation_m: 790 }
+        ]
+      },
+      {
+        id: 'odunpazari',
+        name: 'Odunpazarı',
+        neighborhoods: [
+          { id: 'odunpazari-tarihi', name: 'Tarihi Evler / Atatürk Bulvarı', lat: 39.7600, lon: 30.5250, elevation_m: 810 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'bilecik',
+    name: 'Bilecik',
+    districts: [
+      {
+        id: 'bozuyuk',
+        name: 'Bozüyük',
+        neighborhoods: [
+          { id: 'bozuyuk-istasyon', name: 'YHT Yüksek Hızlı Tren Garı', lat: 39.9050, lon: 30.0450, elevation_m: 740 },
+          { id: 'bozuyuk-carsi', name: 'İsmet İnönü Caddesi / Çarşı', lat: 39.9080, lon: 30.0380, elevation_m: 755 }
+        ]
+      },
+      {
+        id: 'bilecik-merkez',
+        name: 'Merkez',
+        neighborhoods: [
+          { id: 'bilecik-sehir', name: 'Şeyh Edebali Türbesi / Valilik', lat: 40.1420, lon: 29.9790, elevation_m: 510 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'erzurum',
+    name: 'Erzurum',
+    districts: [
+      {
+        id: 'palandoken',
+        name: 'Palandöken',
+        neighborhoods: [
+          { id: 'palandoken-kayak', name: 'Palandöken Kayak Merkezi (Oteller)', lat: 39.8520, lon: 41.2850, elevation_m: 2150 },
+          { id: 'palandoken-merkez', name: 'Yenişehir / Kayak Yolu Caddesi', lat: 39.8920, lon: 41.2650, elevation_m: 1890 }
+        ]
+      },
+      {
+        id: 'yakutiye',
+        name: 'Yakutiye',
+        neighborhoods: [
+          { id: 'yakutiye-cifte', name: 'Çifte Minareli Medrese / Kent Meydanı', lat: 39.9050, lon: 41.2750, elevation_m: 1910 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'trabzon',
+    name: 'Trabzon',
+    districts: [
+      {
+        id: 'ortahisar',
+        name: 'Ortahisar',
+        neighborhoods: [
+          { id: 'ortahisar-meydan', name: 'Trabzon Meydan Parkı / Maraş Caddesi', lat: 41.0050, lon: 39.7280, elevation_m: 35 },
+          { id: 'ortahisar-ktu', name: 'KTÜ Kanuni Kampüsü / Havalimanı Çıkışı', lat: 40.9950, lon: 39.7750, elevation_m: 45 }
+        ]
+      },
+      {
+        id: 'macka',
+        name: 'Maçka',
+        neighborhoods: [
+          { id: 'macka-sumela', name: 'Sümela Manastırı Yolu / Altındere Vadisi', lat: 40.6900, lon: 39.6550, elevation_m: 1150 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'gaziantep',
+    name: 'Gaziantep',
+    districts: [
+      {
+        id: 'sehitkamil',
+        name: 'Şehitkamil',
+        neighborhoods: [
+          { id: 'sehitkamil-ibrahimli', name: 'İbrahimli (Batıkent Bulvarı)', lat: 37.0850, lon: 37.3350, elevation_m: 865 }
+        ]
+      },
+      {
+        id: 'sahinbey',
+        name: 'Şahinbey',
+        neighborhoods: [
+          { id: 'sahinbey-kale', name: 'Gaziantep Kalesi / Bakırcılar Çarşısı', lat: 37.0650, lon: 37.3820, elevation_m: 850 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'adana',
+    name: 'Adana',
+    districts: [
+      {
+        id: 'seyhan',
+        name: 'Seyhan',
+        neighborhoods: [
+          { id: 'seyhan-baraj', name: 'Ziyapaşa Bulvarı / Gazipaşa', lat: 37.0050, lon: 35.3250, elevation_m: 28 }
+        ]
+      },
+      {
+        id: 'cukurova',
+        name: 'Çukurova',
+        neighborhoods: [
+          { id: 'cukurova-guzelyali', name: 'Güzelyalı / Seyhan Baraj Gölü Kıyısı', lat: 37.0450, lon: 35.3120, elevation_m: 65 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'artvin',
+    name: 'Artvin',
+    districts: [
+      {
+        id: 'hopa',
+        name: 'Hopa',
+        neighborhoods: [
+          { id: 'hopa-sarp', name: 'Sarp Sınır Kapısı (Gürcistan Sıfır Noktası)', lat: 41.5220, lon: 41.5510, elevation_m: 5 },
+          { id: 'hopa-liman', name: 'Hopa Limanı / Sahil Caddesi', lat: 41.3920, lon: 41.4310, elevation_m: 10 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'hakkari',
+    name: 'Hakkari',
+    districts: [
+      {
+        id: 'yuksekova',
+        name: 'Yüksekova',
+        neighborhoods: [
+          { id: 'yuksekova-havalimani', name: 'Selahaddin Eyyubi Havalimanı Yolu', lat: 37.5520, lon: 44.2400, elevation_m: 1870 }
+        ]
+      },
+      {
+        id: 'semdinli',
+        name: 'Şemdinli',
+        neighborhoods: [
+          { id: 'semdinli-merkez', name: 'Şemdinli İlçe Merkezi', lat: 37.2970, lon: 44.5750, elevation_m: 1400 }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'agri',
+    name: 'Ağrı',
+    districts: [
+      {
+        id: 'dogubayazit',
+        name: 'Doğubayazıt',
+        neighborhoods: [
+          { id: 'dogubayazit-ishakpasa', name: 'İshak Paşa Sarayı Girişi', lat: 39.5210, lon: 44.1290, elevation_m: 1950 },
+          { id: 'dogubayazit-gurbulak', name: 'Gürbulak Sınır Kapısı (İran Koridoru)', lat: 39.4180, lon: 44.3850, elevation_m: 1530 }
+        ]
+      }
+    ]
+  }
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'telemetry' | 'route' | 'saver' | 'charging' | 'passport'>('route');
+  const [activeTab, setActiveTab] = useState<'route' | 'saver' | 'telemetry' | 'charging' | 'passport'>('route');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('togg-t10x-long');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // --- 1. ROTA PLANLAYICI STATE ---
-  const [originId, setOriginId] = useState<string>('istanbul-anadolu');
-  const [destinationId, setDestinationId] = useState<string>('izmir');
+  // --- 1. ROTA PLANLAYICI HİYERARŞİK STATE (İl -> İlçe -> Mahalle) ---
+  const [origProvinceId, setOrigProvinceId] = useState<string>('istanbul');
+  const [origDistrictId, setOrigDistrictId] = useState<string>('pendik');
+  const [origNeighborhoodId, setOrigNeighborhoodId] = useState<string>('pendik-kurtkoy');
+
+  const [destProvinceId, setDestProvinceId] = useState<string>('izmir');
+  const [destDistrictId, setDestDistrictId] = useState<string>('cesme');
+  const [destNeighborhoodId, setDestNeighborhoodId] = useState<string>('cesme-alacati');
+
   const [departureSoc, setDepartureSoc] = useState<number>(90);
   const [cruisingSpeed, setCruisingSpeed] = useState<number>(120);
   const [routeTemp, setRouteTemp] = useState<number>(24);
@@ -418,34 +807,90 @@ export default function App() {
     [selectedVehicleId]
   );
 
-  // --- HAVERSINE İKİ NOKTA ARASI MESAFE (KARA YOLU DÜZELTMESİYLE) ---
-  const calculateDistanceKm = (loc1: LocationPoint, loc2: LocationPoint) => {
-    const R = 6371; // km
-    const dLat = ((loc2.lat - loc1.lat) * Math.PI) / 180;
-    const dLon = ((loc2.lon - loc1.lon) * Math.PI) / 180;
+  // --- Hiyerarşi Yardımcıları (Kalkış İçin) ---
+  const currentOrigProvince = useMemo(() => 
+    TURKEY_HIERARCHY.find(p => p.id === origProvinceId) || TURKEY_HIERARCHY[0],
+    [origProvinceId]
+  );
+  const currentOrigDistrict = useMemo(() => 
+    currentOrigProvince.districts.find(d => d.id === origDistrictId) || currentOrigProvince.districts[0],
+    [currentOrigProvince, origDistrictId]
+  );
+  const currentOrigNeighborhood = useMemo(() => 
+    currentOrigDistrict.neighborhoods.find(n => n.id === origNeighborhoodId) || currentOrigDistrict.neighborhoods[0],
+    [currentOrigDistrict, origNeighborhoodId]
+  );
+
+  // --- Hiyerarşi Yardımcıları (Varış İçin) ---
+  const currentDestProvince = useMemo(() => 
+    TURKEY_HIERARCHY.find(p => p.id === destProvinceId) || TURKEY_HIERARCHY[2],
+    [destProvinceId]
+  );
+  const currentDestDistrict = useMemo(() => 
+    currentDestProvince.districts.find(d => d.id === destDistrictId) || currentDestProvince.districts[0],
+    [currentDestProvince, destDistrictId]
+  );
+  const currentDestNeighborhood = useMemo(() => 
+    currentDestDistrict.neighborhoods.find(n => n.id === destNeighborhoodId) || currentDestDistrict.neighborhoods[0],
+    [currentDestDistrict, destNeighborhoodId]
+  );
+
+  // --- Kalkış Değişim Olayları ---
+  const handleOrigProvinceChange = (pId: string) => {
+    setOrigProvinceId(pId);
+    const p = TURKEY_HIERARCHY.find(x => x.id === pId) || TURKEY_HIERARCHY[0];
+    const firstDist = p.districts[0];
+    setOrigDistrictId(firstDist.id);
+    setOrigNeighborhoodId(firstDist.neighborhoods[0].id);
+  };
+
+  const handleOrigDistrictChange = (dId: string) => {
+    setOrigDistrictId(dId);
+    const d = currentOrigProvince.districts.find(x => x.id === dId) || currentOrigProvince.districts[0];
+    setOrigNeighborhoodId(d.neighborhoods[0].id);
+  };
+
+  // --- Varış Değişim Olayları ---
+  const handleDestProvinceChange = (pId: string) => {
+    setDestProvinceId(pId);
+    const p = TURKEY_HIERARCHY.find(x => x.id === pId) || TURKEY_HIERARCHY[0];
+    const firstDist = p.districts[0];
+    setDestDistrictId(firstDist.id);
+    setDestNeighborhoodId(firstDist.neighborhoods[0].id);
+  };
+
+  const handleDestDistrictChange = (dId: string) => {
+    setDestDistrictId(dId);
+    const d = currentDestProvince.districts.find(x => x.id === dId) || currentDestProvince.districts[0];
+    setDestNeighborhoodId(d.neighborhoods[0].id);
+  };
+
+  // --- HAVERSINE İKİ MAHALLE ARASI GERÇEK MESAFE HESABI ---
+  const calculateDistanceKm = (n1: Neighborhood, n2: Neighborhood) => {
+    const R = 6371; // Dünya yarıçapı km
+    const dLat = ((n2.lat - n1.lat) * Math.PI) / 180;
+    const dLon = ((n2.lon - n1.lon) * Math.PI) / 180;
     const a = 
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((loc1.lat * Math.PI) / 180) * Math.cos((loc2.lat * Math.PI) / 180) * 
+      Math.cos((n1.lat * Math.PI) / 180) * Math.cos((n2.lat * Math.PI) / 180) * 
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const straightDist = R * c;
-    return Math.round(straightDist * 1.28); // Türkiye otoyol/dağ kıvrım katsayısı (~%28)
+    return Math.max(15, Math.round(straightDist * 1.28)); // Otoyol viraj/dağ katsayısı (~%28)
   };
 
   // --- 1. ROTA VE ŞARJ PLANI ÇALIŞTIRICI ---
   const runRoutePlanner = () => {
-    if (originId === destinationId) {
-      alert('Başlangıç ve varış noktası aynı olamaz!');
+    if (currentOrigNeighborhood.id === currentDestNeighborhood.id) {
+      alert('Kalkış ve varış noktası olarak aynı mahalleyi seçtiniz!');
       return;
     }
     setLoading(true);
     setTimeout(() => {
-      const origin = TURKEY_LOCATIONS.find(l => l.id === originId)!;
-      const destination = TURKEY_LOCATIONS.find(l => l.id === destinationId)!;
-      const totalKm = calculateDistanceKm(origin, destination);
-      const elevationDelta = destination.elevation_m - origin.elevation_m;
+      const totalKm = calculateDistanceKm(currentOrigNeighborhood, currentDestNeighborhood);
+      const elevationDelta = currentDestNeighborhood.elevation_m - currentOrigNeighborhood.elevation_m;
 
-      // Fiziksel Tüketim Hesabı (kWh/100km)
+      // Fiziksel Güç Çekişi (F_aero + F_roll)
       const v_ms = cruisingSpeed / 3.6;
       const f_aero = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_ms ** 2);
       const f_roll = selectedVehicle.rolling_resistance_coeff * selectedVehicle.mass_kg * 9.81;
@@ -458,9 +903,9 @@ export default function App() {
       const p_battery = (p_mech / selectedVehicle.drivetrain_efficiency) + hvac;
       let baseConsumption = (p_battery / cruisingSpeed) * 100;
 
-      // Rakım farkı etkisi (Potansiyel Enerji: m*g*h)
+      // Rakım Potansiyel Enerji Farkı (m * g * h)
       const potentialEnergyKwh = (selectedVehicle.mass_kg * 9.81 * elevationDelta) / (3.6e6 * 0.85);
-      const totalEnergyNeededKwh = ((totalKm / 100) * baseConsumption) + potentialEnergyKwh;
+      const totalEnergyNeededKwh = Math.max(5, ((totalKm / 100) * baseConsumption) + potentialEnergyKwh);
 
       const startingEnergyKwh = selectedVehicle.battery.usable_capacity_kwh * (departureSoc / 100);
       const drivingTimeHours = totalKm / cruisingSpeed;
@@ -471,22 +916,20 @@ export default function App() {
       let totalChargingCostTl = 0;
       let arrivalSoc = 0;
 
-      const dcTariffPerKwh = 8.60; // ₺/kWh ortalama Trugo/ZES DC hızlı şarj fiyatı
+      const dcTariffPerKwh = 8.60; // ₺/kWh ortalama Trugo / ZES / Eşarj DC hızlı şarj fiyatı
 
       if (totalEnergyNeededKwh <= startingEnergyKwh * 0.88) {
-        // Tek seferde varış mümkün!
         arrivalSoc = Math.round(((startingEnergyKwh - totalEnergyNeededKwh) / selectedVehicle.battery.usable_capacity_kwh) * 100);
       } else {
-        // Şarj Molası Gerekiyor
-        const netDeficitKwh = totalEnergyNeededKwh - startingEnergyKwh + (selectedVehicle.battery.usable_capacity_kwh * 0.15); // %15 güvenlik payı
-        const stopCount = Math.ceil(netDeficitKwh / (selectedVehicle.battery.usable_capacity_kwh * 0.60)); // Her molada max %60 dolum (15->75)
+        const netDeficitKwh = totalEnergyNeededKwh - startingEnergyKwh + (selectedVehicle.battery.usable_capacity_kwh * 0.15);
+        const stopCount = Math.ceil(netDeficitKwh / (selectedVehicle.battery.usable_capacity_kwh * 0.60));
         
         const energyPerStop = netDeficitKwh / stopCount;
-        const avgChargingPowerKw = Math.min(selectedVehicle.battery.max_dc_charge_kw * 0.72, 180); // Ortalama şarj gücü (eğri düşüşü dahil)
+        const avgChargingPowerKw = Math.min(selectedVehicle.battery.max_dc_charge_kw * 0.72, 180);
 
         for (let i = 1; i <= stopCount; i++) {
           const stopKm = Math.round((totalKm / (stopCount + 1)) * i);
-          const chargeMinutes = Math.round((energyPerStop / avgChargingPowerKw) * 60) + 4; // +4 dk el sıkışma/istasyon başlatma
+          const chargeMinutes = Math.round((energyPerStop / avgChargingPowerKw) * 60) + 4;
           const costTl = energyPerStop * dcTariffPerKwh;
           
           totalChargeDurationMin += chargeMinutes;
@@ -501,13 +944,15 @@ export default function App() {
             cost_tl: Math.round(costTl)
           });
         }
-        arrivalSoc = 22; // Planlanan güvenli varış şarjı
+        arrivalSoc = 22;
       }
 
       setRoutePlanResult({
-        origin: origin.name,
-        destination: destination.name,
+        origin_full: `${currentOrigProvince.name} / ${currentOrigDistrict.name} (${currentOrigNeighborhood.name})`,
+        destination_full: `${currentDestProvince.name} / ${currentDestDistrict.name} (${currentDestNeighborhood.name})`,
         total_km: totalKm,
+        origin_elev: currentOrigNeighborhood.elevation_m,
+        dest_elev: currentDestNeighborhood.elevation_m,
         elevation_delta_m: elevationDelta,
         consumption_per_100km: Number(baseConsumption.toFixed(1)),
         total_energy_kwh: Number(totalEnergyNeededKwh.toFixed(1)),
@@ -519,7 +964,7 @@ export default function App() {
         requires_charge: stops.length > 0
       });
       setLoading(false);
-    }, 200);
+    }, 150);
   };
 
   // --- 2. ACİL MENZİL KURTARICI (YOLDA KALMAMA ASİSTANI) ---
@@ -528,7 +973,6 @@ export default function App() {
     setTimeout(() => {
       const currentUsableKwh = selectedVehicle.battery.usable_capacity_kwh * (currentSoc / 100);
       
-      // Mevcut Agresif Sürüş Modeli
       const v_curr_ms = currentDrivingSpeed / 3.6;
       const f_aero_curr = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_curr_ms ** 2);
       const f_roll_curr = selectedVehicle.rolling_resistance_coeff * selectedVehicle.mass_kg * 9.81;
@@ -541,12 +985,11 @@ export default function App() {
       const isSafeAsIs = currentUsableKwh >= neededEnergyCurrKwh;
       const deadDistanceKm = isSafeAsIs ? null : Number(((currentUsableKwh / currentConsumption100) * 100).toFixed(1));
 
-      // --- ACİL KURTARMA PLANI (REÇETE) HESABI ---
-      const optimalSpeed = Math.min(82, currentDrivingSpeed); // 80-85 km/h optimum aerodinamik tatlı nokta
+      const optimalSpeed = Math.min(82, currentDrivingSpeed);
       const v_opt_ms = optimalSpeed / 3.6;
       const f_aero_opt = 0.5 * 1.225 * selectedVehicle.drag_coefficient * selectedVehicle.frontal_area_m2 * (v_opt_ms ** 2);
       const p_mech_opt = ((f_aero_opt + f_roll_curr) * v_opt_ms) / 1000;
-      const hvac_opt = 0.15; // Kabin kliması kapalı, sadece koltuk ısıtma açık (150W)
+      const hvac_opt = 0.15;
       const p_battery_opt = (p_mech_opt / selectedVehicle.drivetrain_efficiency) + hvac_opt;
       const optimalConsumption100 = (p_battery_opt / optimalSpeed) * 100;
       const neededEnergyOptKwh = (chargerDistance / 100) * optimalConsumption100;
@@ -685,13 +1128,13 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v2.5 Pro</span>
+              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v2.8 Pro</span>
             </h1>
-            <p className="text-xs text-slate-400">Software-Defined Vehicle Diagnostic & Smart Range Navigation</p>
+            <p className="text-xs text-slate-400">Hierarchical Route & Smart Range Diagnostics</p>
           </div>
         </div>
 
-        {/* Araç Seçim Kutusu */}
+        {/* Araç Filo Seçici */}
         <div className="w-full md:w-auto flex items-center gap-2.5 bg-slate-900 border border-slate-800 p-2 rounded-xl">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1.5 whitespace-nowrap">Filo:</span>
           <select 
@@ -718,7 +1161,7 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <Navigation className="w-4 h-4" /> 🗺️ Rota & Şarj Planlayıcı
+          <Navigation className="w-4 h-4" /> 🗺️ İl / İlçe / Mahalle Rota Planı
         </button>
         <button
           onClick={() => setActiveTab('saver')}
@@ -762,45 +1205,105 @@ export default function App() {
         </button>
       </div>
 
-      {/* Ana İçerik */}
+      {/* Ana Ekran Gövdesi */}
       <main className="max-w-7xl mx-auto mt-6">
 
-        {/* 1. SEKME: ROTA VE ŞARJ PLANLAYICI */}
+        {/* 1. SEKME: HİYERARŞİK ROTA VE ŞARJ PLANLAYICI */}
         {activeTab === 'route' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-              <div>
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-emerald-400" /> Rota & Sürüş Ayarları
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+              <div className="space-y-4">
+                <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+                  <MapPin className="w-5 h-5 text-emerald-400" /> Hiyerarşik Konum Seçimi
                 </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-1">Kalkış Noktası (81 İl + Noktalar)</label>
+
+                {/* KALKIŞ KONUMU */}
+                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-2.5">
+                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    1. Kalkış Noktası (İl ➔ İlçe ➔ Mahalle)
+                  </span>
+
+                  <div className="grid grid-cols-1 gap-2">
                     <select 
-                      value={originId} 
-                      onChange={(e) => setOriginId(e.target.value)}
-                      className="w-full bg-slate-800 text-white text-xs font-medium rounded-lg p-2.5 outline-none border border-slate-700 focus:border-emerald-500"
+                      value={origProvinceId} 
+                      onChange={(e) => handleOrigProvinceChange(e.target.value)}
+                      className="w-full bg-slate-800 text-white text-xs font-semibold rounded-lg p-2 outline-none border border-slate-700 focus:border-emerald-500"
                     >
-                      {TURKEY_LOCATIONS.map(l => (
-                        <option key={`orig-${l.id}`} value={l.id}>{l.name} (Rakım: {l.elevation_m}m)</option>
+                      {TURKEY_HIERARCHY.map(p => (
+                        <option key={`op-${p.id}`} value={p.id}>{p.name}</option>
                       ))}
                     </select>
-                  </div>
 
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-1">Varış Noktası</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <select 
+                        value={origDistrictId} 
+                        onChange={(e) => handleOrigDistrictChange(e.target.value)}
+                        className="w-full bg-slate-800 text-white text-xs rounded-lg p-2 outline-none border border-slate-700 focus:border-emerald-500"
+                      >
+                        {currentOrigProvince.districts.map(d => (
+                          <option key={`od-${d.id}`} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+
+                      <select 
+                        value={origNeighborhoodId} 
+                        onChange={(e) => setOrigNeighborhoodId(e.target.value)}
+                        className="w-full bg-slate-800 text-white text-xs rounded-lg p-2 outline-none border border-slate-700 focus:border-emerald-500"
+                      >
+                        {currentOrigDistrict.neighborhoods.map(n => (
+                          <option key={`on-${n.id}`} value={n.id}>{n.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-slate-400 block text-right">Rakım: {currentOrigNeighborhood.elevation_m}m</span>
+                </div>
+
+                {/* VARIŞ KONUMU */}
+                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-2.5">
+                  <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider block">
+                    2. Varış Noktası (İl ➔ İlçe ➔ Mahalle)
+                  </span>
+
+                  <div className="grid grid-cols-1 gap-2">
                     <select 
-                      value={destinationId} 
-                      onChange={(e) => setDestinationId(e.target.value)}
-                      className="w-full bg-slate-800 text-white text-xs font-medium rounded-lg p-2.5 outline-none border border-slate-700 focus:border-emerald-500"
+                      value={destProvinceId} 
+                      onChange={(e) => handleDestProvinceChange(e.target.value)}
+                      className="w-full bg-slate-800 text-white text-xs font-semibold rounded-lg p-2 outline-none border border-slate-700 focus:border-cyan-500"
                     >
-                      {TURKEY_LOCATIONS.map(l => (
-                        <option key={`dest-${l.id}`} value={l.id}>{l.name} (Rakım: {l.elevation_m}m)</option>
+                      {TURKEY_HIERARCHY.map(p => (
+                        <option key={`dp-${p.id}`} value={p.id}>{p.name}</option>
                       ))}
                     </select>
-                  </div>
 
-                  <div className="pt-2 border-t border-slate-800/80">
+                    <div className="grid grid-cols-2 gap-2">
+                      <select 
+                        value={destDistrictId} 
+                        onChange={(e) => handleDestDistrictChange(e.target.value)}
+                        className="w-full bg-slate-800 text-white text-xs rounded-lg p-2 outline-none border border-slate-700 focus:border-cyan-500"
+                      >
+                        {currentDestProvince.districts.map(d => (
+                          <option key={`dd-${d.id}`} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+
+                      <select 
+                        value={destNeighborhoodId} 
+                        onChange={(e) => setDestNeighborhoodId(e.target.value)}
+                        className="w-full bg-slate-800 text-white text-xs rounded-lg p-2 outline-none border border-slate-700 focus:border-cyan-500"
+                      >
+                        {currentDestDistrict.neighborhoods.map(n => (
+                          <option key={`dn-${n.id}`} value={n.id}>{n.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-slate-400 block text-right">Rakım: {currentDestNeighborhood.elevation_m}m</span>
+                </div>
+
+                {/* SÜRÜŞ ŞARTLARI */}
+                <div className="space-y-3 pt-2">
+                  <div>
                     <div className="flex justify-between text-xs text-slate-400 mb-1">
                       <span>Çıkış Şarjı (SoC)</span>
                       <span className="font-bold text-emerald-400">%{departureSoc}</span>
@@ -841,7 +1344,7 @@ export default function App() {
               <button
                 onClick={runRoutePlanner}
                 disabled={loading}
-                className="mt-6 w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                className="mt-5 w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
               >
                 {loading ? 'Fizik & Molalar Hesaplanıyor...' : 'Akıllı Rotayı Planla'}
               </button>
@@ -851,12 +1354,28 @@ export default function App() {
             <div className="lg:col-span-2">
               {routePlanResult ? (
                 <div className="space-y-4">
-                  {/* Özet Kartları */}
+                  {/* Başlık Kartı */}
+                  <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="text-xs">
+                      <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+                        <span className="text-emerald-400">{routePlanResult.origin_full}</span>
+                        <ChevronRight className="w-4 h-4 text-slate-500" />
+                        <span className="text-cyan-400">{routePlanResult.destination_full}</span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 mt-0.5 block">
+                        Kalkış: {routePlanResult.origin_elev}m ➔ Varış: {routePlanResult.dest_elev}m (Net Eğim: {routePlanResult.elevation_delta_m > 0 ? `+${routePlanResult.elevation_delta_m}m` : `${routePlanResult.elevation_delta_m}m`})
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full">
+                      {routePlanResult.requires_charge ? `${routePlanResult.charging_stops.length} Şarj Molası` : 'Kesintisiz Varış'}
+                    </span>
+                  </div>
+
+                  {/* Metrik Kartları */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
                       <span className="text-xs text-slate-400 flex items-center gap-1"><Navigation className="w-3.5 h-3.5 text-emerald-400" /> Mesafe</span>
                       <p className="text-2xl font-black text-white mt-1">{routePlanResult.total_km} <span className="text-xs font-normal text-slate-400">km</span></p>
-                      <span className="text-[10px] text-slate-400">Rakım Farkı: {routePlanResult.elevation_delta_m > 0 ? `+${routePlanResult.elevation_delta_m}m` : `${routePlanResult.elevation_delta_m}m`}</span>
                     </div>
 
                     <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
@@ -874,18 +1393,13 @@ export default function App() {
                     <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
                       <span className="text-xs text-slate-400 flex items-center gap-1"><CreditCard className="w-3.5 h-3.5 text-emerald-400" /> Şarj Maliyeti</span>
                       <p className="text-2xl font-black text-emerald-400 mt-1">{routePlanResult.total_charge_cost_tl} <span className="text-xs font-normal text-slate-400">₺</span></p>
-                      <span className="text-[10px] text-slate-400">Varış Şarjı: %{routePlanResult.arrival_soc}</span>
+                      <span className="text-[10px] text-slate-400">Hedef Şarjı: %{routePlanResult.arrival_soc}</span>
                     </div>
                   </div>
 
                   {/* Rota Durak Detayı */}
-                  <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl">
-                    <h3 className="text-sm font-bold text-white mb-4 flex items-center justify-between">
-                      <span>Rota & Şarj İstasyonu İtinereri</span>
-                      <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                        {routePlanResult.requires_charge ? `${routePlanResult.charging_stops.length} Hızlı Şarj Molası` : 'Direkt Varış (Mola Gerekmez)'}
-                      </span>
-                    </h3>
+                  <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl">
+                    <h3 className="text-sm font-bold text-white mb-4">Şarj İtinereri & Yol Haritası</h3>
 
                     <div className="space-y-4 relative before:absolute before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-800">
                       {/* Çıkış */}
@@ -894,8 +1408,8 @@ export default function App() {
                           A
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-white">{routePlanResult.origin}</h4>
-                          <p className="text-xs text-slate-400">Yola Çıkış Şarjı: <span className="text-emerald-400 font-semibold">%{departureSoc}</span> • {cruisingSpeed} km/h Sabit Hız</p>
+                          <h4 className="text-sm font-bold text-white">{routePlanResult.origin_full}</h4>
+                          <p className="text-xs text-slate-400">Yola Çıkış: <span className="text-emerald-400 font-semibold">%{departureSoc} SoC</span> • {cruisingSpeed} km/h Sabit Seyir</p>
                         </div>
                       </div>
 
@@ -923,8 +1437,8 @@ export default function App() {
                           B
                         </div>
                         <div>
-                          <h4 className="text-sm font-bold text-white">{routePlanResult.destination}</h4>
-                          <p className="text-xs text-slate-400">Hedefe Güvenli Varış Şarjı: <span className="text-cyan-400 font-bold">%{routePlanResult.arrival_soc}</span></p>
+                          <h4 className="text-sm font-bold text-white">{routePlanResult.destination_full}</h4>
+                          <p className="text-xs text-slate-400">Hedefe Güvenli Varış Bataryası: <span className="text-cyan-400 font-bold">%{routePlanResult.arrival_soc}</span></p>
                         </div>
                       </div>
                     </div>
@@ -933,9 +1447,9 @@ export default function App() {
               ) : (
                 <div className="h-full min-h-[320px] bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                   <Navigation className="w-12 h-12 text-slate-600 mb-3 animate-pulse" />
-                  <h3 className="text-base font-semibold text-slate-300">Akıllı Rota Analizini Başlatın</h3>
+                  <h3 className="text-base font-semibold text-slate-300">Hiyerarşik Rota Analizini Başlatın</h3>
                   <p className="text-xs text-slate-500 max-w-md mt-1">
-                    Türkiye'nin 81 ili ve turistik noktaları arasında rakım farkı, aerodinamik sürtünme ve DC hızlı şarj maliyetlerini hesaplayın.
+                    Sol taraftan İl, İlçe ve Mahalle seçimini yaparak Türkiye'nin her noktasına özel rakım ve hızlı şarj hesaplaması yapın.
                   </p>
                 </div>
               )}
@@ -943,7 +1457,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 2. SEKME: ACİL MENZİL KURTARICI (YOLDA KALMAMA ASİSTANI) */}
+        {/* 2. SEKME: ACİL MENZİL KURTARICI */}
         {activeTab === 'saver' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
@@ -1020,11 +1534,10 @@ export default function App() {
               </button>
             </div>
 
-            {/* Kurtarma Reçetesi Ekranı */}
+            {/* Reçete Çıktısı */}
             <div className="lg:col-span-2">
               {rescueResult ? (
                 <div className="space-y-4">
-                  {/* Durum Başlığı */}
                   <div className={`p-6 rounded-2xl border flex items-start justify-between ${
                     rescueResult.is_safe_as_is 
                       ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300' 
@@ -1045,13 +1558,12 @@ export default function App() {
                         <p className="text-xs text-slate-300 mt-1">
                           {rescueResult.is_safe_as_is 
                             ? `Mevcut tüketiminizle (${rescueResult.current_consumption} kWh/100km) şarj istasyonuna rahatlıkla varacaksınız.` 
-                            : `Bataryanız istasyona ${rescueResult.dead_distance_km}. kilometrede tamamen tükenecek (%0). Lütfen aşağıdaki acil reçeteyi uygulayın!`}
+                            : `Bataryanız istasyona ${rescueResult.dead_distance_km}. kilometrede tamamen tükenecektir (%0). Aşağıdaki acil reçeteyi uygulayın!`}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Reçete Kartı */}
                   <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl">
                     <h4 className="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                       <Flame className="w-4 h-4" /> Hayat Kurtaran Acil Sürüş Reçetesi
@@ -1061,7 +1573,7 @@ export default function App() {
                       <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
                         <span className="text-xs text-slate-400">Hedef Hız Sabitleme</span>
                         <p className="text-2xl font-black text-amber-400 mt-1">{rescueResult.optimal_speed} <span className="text-xs font-normal text-slate-400">km/h</span></p>
-                        <span className="text-[10px] text-slate-400">Hava sürtünmesi %38 azalır</span>
+                        <span className="text-[10px] text-slate-400">Hava direnci %38 azalır</span>
                       </div>
 
                       <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
@@ -1106,7 +1618,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 3. SEKME: TELEMETRİ VE FİZİK MOTORU */}
+        {/* 3. SEKME: TELEMETRİ VE FİZİK */}
         {activeTab === 'telemetry' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
