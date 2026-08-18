@@ -250,7 +250,7 @@ const VEHICLES: Vehicle[] = [
   }
 ];
 
-// --- 81 İLİN TAMAMI (01'DEN 81'E EKSİKSİZ PLAKA SIRASI) ---
+// --- 81 İLİN TAMAMI (01 - 81 EKSİKSİZ PLAKA SIRASIYLA) ---
 interface DistrictItem {
   id: string;
   name: string;
@@ -399,7 +399,7 @@ export default function App() {
 
   // Kalkış Seçim Yardımcıları
   const currentOrigProvince = useMemo(() => 
-    TURKEY_PROVINCES.find(p => p.id === origProvinceId) || TURKEY_PROVINCES[33], // 34 İstanbul
+    TURKEY_PROVINCES.find(p => p.id === origProvinceId) || TURKEY_PROVINCES[33],
     [origProvinceId]
   );
   const currentOrigDistrict = useMemo(() => 
@@ -409,7 +409,7 @@ export default function App() {
 
   // Varış Seçim Yardımcıları
   const currentDestProvince = useMemo(() => 
-    TURKEY_PROVINCES.find(p => p.id === destProvinceId) || TURKEY_PROVINCES[34], // 35 İzmir
+    TURKEY_PROVINCES.find(p => p.id === destProvinceId) || TURKEY_PROVINCES[34],
     [destProvinceId]
   );
   const currentDestDistrict = useMemo(() => 
@@ -430,7 +430,7 @@ export default function App() {
     setDestDistrictId(p.districts[0].id);
   };
 
-  // --- HAVERSINE İKİ İLÇE ARASI MESAFE HESABI ---
+  // --- HAVERSINE GERÇEK KARAYOLU MESAFE HESABI ---
   const calculateDistanceKm = (d1: DistrictItem, d2: DistrictItem) => {
     const R = 6371;
     const dLat = ((d2.lat - d1.lat) * Math.PI) / 180;
@@ -693,9 +693,9 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">81 İl Eksiksiz</span>
+              VoltPulse SDV <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v3.0 Pro</span>
             </h1>
-            <p className="text-xs text-slate-400">Turkey 81 Provinces Complete EV Range & Diagnostic Suite</p>
+            <p className="text-xs text-slate-400">Software-Defined Vehicle Diagnostic & Smart Navigation Suite</p>
           </div>
         </div>
 
@@ -726,7 +726,7 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <Navigation className="w-4 h-4" /> 🗺️ 81 İl Rota Planı
+          <Navigation className="w-4 h-4" /> Akıllı Rota & Şarj Planı
         </button>
         <button
           onClick={() => setActiveTab('saver')}
@@ -736,7 +736,7 @@ export default function App() {
               : 'text-slate-400 hover:text-white hover:bg-slate-900'
           }`}
         >
-          <LifeBuoy className="w-4 h-4" /> 🚨 Menzil Kurtarıcı
+          <LifeBuoy className="w-4 h-4" /> Menzil Kurtarıcı
         </button>
         <button
           onClick={() => setActiveTab('telemetry')}
@@ -773,13 +773,13 @@ export default function App() {
       {/* Ana Gövde */}
       <main className="max-w-7xl mx-auto mt-6">
 
-        {/* 1. SEKME: 81 İL ROTA PLANI */}
+        {/* 1. SEKME: ROTA VE ŞARJ PLANI */}
         {activeTab === 'route' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
               <div className="space-y-4">
                 <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-                  <MapPin className="w-5 h-5 text-emerald-400" /> 81 İl ve İlçe Seçimi
+                  <MapPin className="w-5 h-5 text-emerald-400" /> Rota & Konum Seçimi
                 </h2>
 
                 {/* 1. KALKIŞ NOKTASI */}
@@ -790,7 +790,7 @@ export default function App() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[10px] text-slate-400 block mb-0.5">İl (01-81)</label>
+                      <label className="text-[10px] text-slate-400 block mb-0.5">İl</label>
                       <select 
                         value={origProvinceId} 
                         onChange={(e) => handleOrigProvinceChange(e.target.value)}
@@ -829,7 +829,7 @@ export default function App() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[10px] text-slate-400 block mb-0.5">İl (01-81)</label>
+                      <label className="text-[10px] text-slate-400 block mb-0.5">İl</label>
                       <select 
                         value={destProvinceId} 
                         onChange={(e) => handleDestProvinceChange(e.target.value)}
@@ -1006,9 +1006,9 @@ export default function App() {
               ) : (
                 <div className="h-full min-h-[320px] bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                   <Navigation className="w-12 h-12 text-slate-600 mb-3 animate-pulse" />
-                  <h3 className="text-base font-semibold text-slate-300">81 İl Akıllı Rota Analizi</h3>
+                  <h3 className="text-base font-semibold text-slate-300">Akıllı Rota Analizini Başlatın</h3>
                   <p className="text-xs text-slate-500 max-w-md mt-1">
-                    01 Adana'dan 81 Düzce'ye kadar tüm illeri ve ilçelerini seçerek rakım, batarya tüketimi ve şarj molalarını anında hesaplayın.
+                    Başlangıç ve varış noktalarınızı seçerek fiziksel eğim, net enerji tüketimi ve DC hızlı şarj molalarını anında hesaplayın.
                   </p>
                 </div>
               )}
